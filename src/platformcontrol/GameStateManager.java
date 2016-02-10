@@ -1,7 +1,10 @@
 package platformcontrol;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -77,13 +80,38 @@ public final class GameStateManager{
     }
     
     private void saveGame(){
-        
-        try(BufferedReader reader = new BufferedReader(
-                    new FileReader("./DragonSave.data"))){
-            String level = reader.readLine();
-        } catch (IOException ex){
-            ex.printStackTrace();
+        File file = new File("./DragonSave.data");
+        if (file.exists()){
+            try(BufferedWriter writer = new BufferedWriter(
+                    new FileWriter(file))){
+                writer.write(currentState.toString());
+            } catch (IOException ex){
+                ex.getCause();
+            }
         }
+        else if (!file.exists()){
+            try(BufferedWriter writer = new BufferedWriter(
+                    new FileWriter("./DragonSave.data"))){
+                writer.write(StateType.LEVEL1.toString());
+            } catch (IOException ex){
+                ex.getCause();
+            }
+        }
+    }
+    
+    public int loadSave(){
+        String level = null;
+        try(BufferedReader reader = new BufferedReader(new FileReader("./DragonSave.data"))){
+            level = reader.readLine();
+        } catch (IOException ex) {
+            //Do nothing
+        }
+        
+        String len = "LEVEL";
+        String levelNumber = level.substring(len.length());
+        int max = Integer.valueOf(levelNumber);
+        
+        return max;
     }
     
     public StateType getCurrentState(){

@@ -1,8 +1,5 @@
 package platformcontrol;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.image.Image;
@@ -41,27 +38,11 @@ public class LoadScreen extends GameState {
         initKeyListener();
         initObjects();
     }
-    
-    public String loadSave(){
-        String level = null;
-        try(BufferedReader reader = new BufferedReader(new FileReader("./DragonSave.data"))){
-            level = reader.readLine();
-        } catch (IOException ex) {
-            //Do nothing
-        }
-        
-        return level;
-    }
 
     @Override
     public void initObjects() {
         String level = loadSave();
-        if (level == null){
-            gsm.changeState(StateType.LEVEL1);
-        }
-        else{
-            String lastLetter = level.substring(level.length() - 1);
-            int max = Integer.valueOf(lastLetter);
+        if (level != null){
             List<String> options = new ArrayList<>();
             for (int i = max; i > 0; i--){
                 String option = "Level " + String.valueOf(i);
@@ -83,7 +64,10 @@ public class LoadScreen extends GameState {
         
             currentSelection = this.getChildren().size() - 1;
             selectionUpdate();
-        }//End else
+        }//End if
+        else{
+            gsm.changeState(GameStateManager.StateType.LEVEL1);
+        }
     }//End initObjects()
     
     public void initKeyListener() {
