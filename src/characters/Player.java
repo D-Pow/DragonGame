@@ -13,6 +13,7 @@ public class Player extends Entity{
     //Animation sprites
     protected final ArrayList<Image[]> rightSprites;
     protected final ArrayList<Image[]> leftSprites;
+    ArrayList<Image[]> playerSprites;//which of the right/left sprites is active
     private int origWidth;
     public boolean inCenter; //Decide whether or not to move map
     
@@ -20,6 +21,7 @@ public class Player extends Entity{
         super(null, world);
         rightSprites = sm.getPlayerSpritesRight();
         leftSprites = sm.getPlayerSpritesLeft();
+        playerSprites = null;
         currentAction = IDLE;
         this.setImage(rightSprites.get(IDLE)[0]);
         int size = GameState.ENTITY_SIZE;
@@ -172,10 +174,10 @@ public class Player extends Entity{
         tilesToCheck.clear();
     }
     
-    public boolean checkEnemyCollision(){
+    public void checkEnemyCollision(){
         //For enemy:
         ImageView enemy = null;
-        return checkObjectCollision((ImageView) this, enemy);
+        checkObjectCollision((ImageView) this, enemy);
     }
     
     public void checkMapLocation(){
@@ -209,7 +211,6 @@ public class Player extends Entity{
     protected void updateImage(){
         timeToUpdateCycler++;
         if (timeToUpdateCycler == UPDATE_TIME){
-            ArrayList<Image[]> playerSprites = null;
             switch (direction){
                 case "Right":
                     playerSprites = new ArrayList(rightSprites);
