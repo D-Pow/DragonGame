@@ -92,7 +92,6 @@ public final class GameStateManager{
                 String len = "LEVEL";
                 String currentLevelString = currentState.toString();
                 String levelNumber = currentLevelString.substring(len.length());
-                System.out.printf("len: %d%nlevelNumber: %s%n", len.length(),levelNumber);
                 int newLevel = Integer.valueOf(levelNumber);
                 
                 if (newLevel > oldLevel){
@@ -103,7 +102,6 @@ public final class GameStateManager{
             }
         }
         else if (!file.exists()){
-            System.out.println("New File!");
             try(BufferedWriter writer = new BufferedWriter(
                     new FileWriter("./DragonSave.data"))){
                 writer.write(StateType.LEVEL1.toString());
