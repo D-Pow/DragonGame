@@ -159,8 +159,7 @@ public class Entity extends ImageView{
             jumpTime = jumpHeight;
             topLeft = topRight = topMiddle = false;
         }
-        if ((bottomLeft || bottomRight || bottomMiddle) &&
-                !((bottomLeft || bottomRight) && !bottomMiddle && (midLeft || midRight))){
+        if ((bottomLeft || bottomRight || bottomMiddle)){
             onGround = true;
         }
     }

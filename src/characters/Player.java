@@ -50,8 +50,10 @@ public class Player extends Entity{
     }
     
     public void move(){
-        if (moving){
-            if (!attacking) {currentAction = WALKING;}
+        if (moving && !attacking){
+            if (!attacking) {
+                currentAction = WALKING;
+            }
             switch(direction){
                 case "Left":
                     //If the player isn't in the center of the screen
@@ -92,8 +94,10 @@ public class Player extends Entity{
                     break;
             }
         }
-        else{
-            if (!attacking) {currentAction = IDLE;}
+        else{//if not moving
+            if (!attacking) {
+                currentAction = IDLE;
+            }
         }
     }
     
@@ -224,7 +228,9 @@ public class Player extends Entity{
                 if (scratching){
                     scratching = false;
                     currentAction = IDLE;
-                    if (direction.equals("Left")) {setX(getX() + origWidth);}
+                    if (direction.equals("Left")) {
+                        setX(getX() + origWidth);
+                    }
                     setFitWidth(origWidth);
                     justScratched = false;
                 }
@@ -233,7 +239,9 @@ public class Player extends Entity{
             if (attacking && scratching){
                 //To compensate for the extra width, the character is moved
                 //only if facing left
-                if (direction.equals("Left") && animationCycler == 0) {setX(getX() - origWidth);}
+                if (direction.equals("Left") && animationCycler == 0) {
+                    setX(getX() - origWidth);
+                }
                 setFitWidth(origWidth*2);
             }
             setImage(playerSprites.get(currentAction)[animationCycler]);
