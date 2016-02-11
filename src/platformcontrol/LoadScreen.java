@@ -41,33 +41,28 @@ public class LoadScreen extends GameState {
 
     @Override
     public void initObjects() {
-        String level = loadSave();
-        if (level != null){
-            List<String> options = new ArrayList<>();
-            for (int i = max; i > 0; i--){
-                String option = "Level " + String.valueOf(i);
-                options.add(option);
-            }
-        
-            for (int i = 0; i < options.size(); i++){
-                Text message = new Text(options.get(i));
-                Font font = new Font("vernanda", 40);
-                message.setFont(font);
-                message.setFill(Color.BLUE);
-                message.setTextAlignment(TextAlignment.CENTER);
-                double messageW = message.getLayoutBounds().getWidth();
-                double messageH = message.getLayoutBounds().getHeight();
-                message.setX((w - messageW)/2);
-                message.setY(h - (messageH*2 + messageH*i));            
-                this.getChildren().add(message);
-            }
-        
-            currentSelection = this.getChildren().size() - 1;
-            selectionUpdate();
-        }//End if
-        else{
-            gsm.changeState(GameStateManager.StateType.LEVEL1);
+        int levelNumber = gsm.loadSave();
+        List<String> options = new ArrayList<>();
+        for (int i = levelNumber; i > 0; i--){
+            String option = "Level " + String.valueOf(i);
+            options.add(option);
         }
+        
+        for (int i = 0; i < options.size(); i++){
+            Text message = new Text(options.get(i));
+            Font font = new Font("vernanda", 40);
+            message.setFont(font);
+            message.setFill(Color.BLUE);
+            message.setTextAlignment(TextAlignment.CENTER);
+            double messageW = message.getLayoutBounds().getWidth();
+            double messageH = message.getLayoutBounds().getHeight();
+            message.setX((w - messageW)/2);
+            message.setY(h - (messageH*2 + messageH*i));            
+            this.getChildren().add(message);
+        }
+        
+        currentSelection = this.getChildren().size() - 1;
+        selectionUpdate();
     }//End initObjects()
     
     public void initKeyListener() {
@@ -101,8 +96,9 @@ public class LoadScreen extends GameState {
     private void activate(){
         Text message = (Text) this.getChildren().get(currentSelection);
         String text = message.getText();
-        String lastLetter = text.substring(text.length() - 1);
-        int chosen = Integer.valueOf(lastLetter);
+        String len = "LEVEL ";
+        String levelNumber = text.substring(len.length());
+        int chosen = Integer.valueOf(levelNumber);
         gsm.changeState(StateType.valueOf("LEVEL" + String.valueOf(chosen)));
     }
     

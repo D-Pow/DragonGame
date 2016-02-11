@@ -81,15 +81,29 @@ public final class GameStateManager{
     
     private void saveGame(){
         File file = new File("./DragonSave.data");
-        if (file.exists()){
+        //If the file exists, compare if current level is higher than
+        //the saved level. If it is, overwrite it.
+        if (file.exists() && 
+                currentState != StateType.MENU && currentState != StateType.LOAD){
             try(BufferedWriter writer = new BufferedWriter(
                     new FileWriter(file))){
-                writer.write(currentState.toString());
+                int oldLevel = loadSave();
+                
+                String len = "LEVEL";
+                String currentLevelString = currentState.toString();
+                String levelNumber = currentLevelString.substring(len.length());
+                System.out.printf("len: %d%nlevelNumber: %s%n", len.length(),levelNumber);
+                int newLevel = Integer.valueOf(levelNumber);
+                
+                if (newLevel > oldLevel){
+                    writer.write(currentState.toString());
+                }
             } catch (IOException ex){
                 ex.getCause();
             }
         }
         else if (!file.exists()){
+            System.out.println("New File!");
             try(BufferedWriter writer = new BufferedWriter(
                     new FileWriter("./DragonSave.data"))){
                 writer.write(StateType.LEVEL1.toString());
@@ -107,11 +121,15 @@ public final class GameStateManager{
             //Do nothing
         }
         
-        String len = "LEVEL";
-        String levelNumber = level.substring(len.length());
-        int max = Integer.valueOf(levelNumber);
-        
-        return max;
+        if (level != null){
+            String len = "LEVEL";
+            String levelNumber = level.substring(len.length());
+            int number = Integer.valueOf(levelNumber);
+            return number;
+        }
+        else{
+            return 0;
+        }
     }
     
     public StateType getCurrentState(){
