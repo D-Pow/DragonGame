@@ -7,7 +7,6 @@ import javafx.scene.image.Image;
 
 public class SpriteManager {
     BufferedImage playerSpritesFile;
-    private ArrayList<Image[]> playerSprites;
     private ArrayList<Image[]> playerSpritesRight;
     private ArrayList<Image[]> playerSpritesLeft;
     private int[] numberOfSpriteFrames;
@@ -41,7 +40,7 @@ public class SpriteManager {
      * Initialize the player's sprites.
      */
     private void initPlayerSprites(String s){
-        playerSprites = new ArrayList<>();
+        ArrayList<Image[]> playerSprites = new ArrayList<>();
         //Make a list of how many sprite frames per type of movement
         numberOfSpriteFrames = new int[]{2, 8, 1, 2, 4, 2, 5};
         //Load the image from resources and turn into buffered image

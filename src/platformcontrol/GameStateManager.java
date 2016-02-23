@@ -33,13 +33,6 @@ public final class GameStateManager{
      * @param state The game state the manager switches to.
      */
     public void changeState(StateType state){
-        //StateType[] st = StateType.values();
-        //Add an overloaded method that takes
-        //no arguments such that the state type
-        //just cycles through to the next state
-        //i.e. finishing level 1 automatically
-        //loads level 2 without having to specify
-        //it.
         width = stage.getWidth();
         height = stage.getHeight();
         currentState = state;

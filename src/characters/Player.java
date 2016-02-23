@@ -49,6 +49,7 @@ public class Player extends Entity{
         updateImage();
         move();
         jump();
+        checkDeath();
     }
     
     public void move(){
@@ -205,6 +206,10 @@ public class Player extends Entity{
         else{
             inCenter = false;
         }
+        
+    }
+    
+    protected void checkDeath(){
         
     }
     
