@@ -21,7 +21,7 @@ public class Level1 extends GameState{
         initObjects();
         
         running = true;
-        Thread t = new Thread(new Runnable(){
+        GameState.gameThread = new Thread(new Runnable(){
             @Override
             public void run() {
                 while (true){
@@ -37,17 +37,17 @@ public class Level1 extends GameState{
             }
         });
         
-        t.start();
+        GameState.gameThread.start();
     }
     
     @Override
     public void initObjects(){
-        //Making the player also adds the keyListener to the gameState
-        player = new Player(this);
         //Set start location
-        player.setX(player.getFitWidth()*1.5);
-        player.setY(h - GameState.ENTITY_SIZE*3.5);
-        characters.getChildren().add(player);
+        double playerStartX = GameState.ENTITY_SIZE*1.5;
+        double playerStartY = h - GameState.ENTITY_SIZE*3.5;
+        //Making the player also adds the keyListener to the gameState
+        player = new Player(this, playerStartX, playerStartY);
+        entities.getChildren().add(player);
         
         try {
             InputStream in = this.getClass().getResourceAsStream("/levelresources/Level1.map");
@@ -56,7 +56,7 @@ public class Level1 extends GameState{
             ex.printStackTrace();
         }
         
-        this.getChildren().addAll(characters, map);
+        this.getChildren().addAll(entities, map);
     }
     
     public void runGame(){

@@ -9,7 +9,7 @@ import javafx.scene.input.KeyEvent;
 import platformcontrol.GameState;
 
 public class Player extends Entity{
-    SpriteManager sm = new SpriteManager("Player");
+    SpriteManager sm;
     //Animation sprites
     protected final ArrayList<Image[]> rightSprites;
     protected final ArrayList<Image[]> leftSprites;
@@ -17,21 +17,27 @@ public class Player extends Entity{
     private int origWidth;
     public boolean inCenter; //Decide whether or not to move map
     
-    public Player(GameState world){
+    public Player(GameState world, double startX, double startY){
         super(null, world);
+        sm = new SpriteManager();
         rightSprites = sm.getPlayerSpritesRight();
         leftSprites = sm.getPlayerSpritesLeft();
         playerSprites = null;
         currentAction = IDLE;
         this.setImage(rightSprites.get(IDLE)[0]);
         int size = GameState.ENTITY_SIZE;
+        setX(startX);
+        setY(startY);
         setFitWidth(size);
         setFitHeight(size);
         origWidth = size;
         direction = "Right";
         moveSpeed = 2;
+        fireSpeed = 4;
         jumpSpeed = 3;
         jumpHeight = 40; //Pixel jump height = jumpHeight*jumpSpeed
+        health = 500;
+        alive = true;
         initWorldKeyListener();
     }
     
@@ -43,13 +49,18 @@ public class Player extends Entity{
      * each level.
      */
     public void updatePlayer(){
-        checkMapCollision();
-        //checkEnemyCollision();
-        checkMapLocation();
-        updateImage();
-        move();
-        jump();
-        checkDeath();
+        if (alive){
+            checkMapCollision();
+            //checkEnemyCollision();
+            checkMapLocation();
+            updateImage();
+            move();
+            jump();
+            checkDeath();
+        }
+        else{
+            die();
+        }
     }
     
     public void move(){
@@ -157,13 +168,23 @@ public class Player extends Entity{
         }
     }
     
+    public void fire(){
+        if (!justFired){
+            attacking = true;
+            firing = true;
+            currentAction = FIRING;
+            animationCycler = 0;
+            Fireball fireball = new Fireball(direction, fireSpeed, world);
+        }
+    }
+    
     public void checkMapCollision(){
         //For each map tile
         for (Node n : world.map.getChildren()){
             int tileIndex = world.map.getChildren().indexOf(n);
             int tileNumber = world.mapTileNumbers.get(tileIndex);
             //If the tile isn't a ghost (decoration) tile
-            if (tileNumber > world.numGhostTiles - 1){
+            if (tileNumber > world.numDecorationTiles - 1){
                 ImageView tile = (ImageView) n;
                 //Check collision
                 if (checkObjectCollision((ImageView) this, tile)){
@@ -179,6 +200,7 @@ public class Player extends Entity{
         //For enemy:
         ImageView enemy = null;
         checkObjectCollision((ImageView) this, enemy);
+        //checkDeath();
     }
     
     public void checkMapLocation(){
@@ -209,10 +231,6 @@ public class Player extends Entity{
         
     }
     
-    protected void checkDeath(){
-        
-    }
-    
     protected void updateImage(){
         timeToUpdateCycler++;
         if (timeToUpdateCycler == UPDATE_TIME){
@@ -239,6 +257,11 @@ public class Player extends Entity{
                     }
                     setFitWidth(origWidth);
                     justScratched = false;
+                }
+                if (firing){
+                    firing = false;
+                    currentAction = IDLE;
+                    justFired = false;
                 }
             }
             //Since the scratch image width is twice that of the normal sprite
@@ -272,9 +295,13 @@ public class Player extends Entity{
             if (e.getCode() == KeyCode.W){
                 gliding = true;
             }
-            if (e.getCode() == KeyCode.O){
+            if (e.getCode() == KeyCode.J){
                 scratch();
                 justScratched = true;
+            }
+            if (e.getCode() == KeyCode.K){
+                fire();
+                justFired = true;
             }
         });
         

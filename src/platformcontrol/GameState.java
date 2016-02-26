@@ -18,6 +18,7 @@ abstract public class GameState extends Pane{
     protected GameStateManager gsm;
     protected double w;//Used only for initObjects
     protected double h;//Used only for initObjects
+    public static Thread gameThread;
     
     //GameMap and TileSet
     //int[row][col] i.e. int[y][x]
@@ -27,19 +28,22 @@ abstract public class GameState extends Pane{
     public Group map = new Group(); //Used to hold ImageViews for the levels
     public List<Integer> mapTileNumbers; //Used to get tile # for map group
                                          //in order to know if tile is ghost tile or not
+                                         //to calculate character collisions
     protected int[][] mapTiles; //Raw tile numbers in the map
     protected Image[][] tileSet; //Used in putting images on the screen
     protected int tileSize;
     protected int numTileColumns;
-    public int numGhostTiles; //Number of tiles to not include in entity collision
-                                //Ghost tile = decoration tile
+    public int numDecorationTiles; //Number of tiles to not include in entity collision
     
     //Used to check if game is paused
     protected boolean running;
     
     //Characters
-    protected Player player;
-    protected Group characters = new Group();
+    public Player player;
+    public Group entities = new Group();
+    
+    //Used in Entity class for the death sequence
+    public Image blankTile;
     
     private static final int NUMTILEROWS = 2;
     public static final int ENTITY_SIZE = 80;
@@ -52,6 +56,11 @@ abstract public class GameState extends Pane{
         loadMapSheet(in); //Load the saved matrix of int values from resources
         loadMap();       //Make images for each tile and put them on screen
         mapWidth = mapTiles[0].length*MAP_TILE_SIZE;
+    }
+    
+    public void reset(){
+        gameThread.stop(); //Necessary to prevent lagging
+        gsm.changeState(gsm.getCurrentState());
     }
     
     public void moveMap(String direction, int moveSpeed){
@@ -117,6 +126,7 @@ abstract public class GameState extends Pane{
                 map.getChildren().add(image);
             }
         }
+        blankTile = tileSet[0][0];
     }//End loadMap()
     
     /**
@@ -172,6 +182,6 @@ abstract public class GameState extends Pane{
         } catch(Exception e){
             e.printStackTrace();
         }
-        numGhostTiles = numTileColumns;
+        numDecorationTiles = numTileColumns;
     }
 }

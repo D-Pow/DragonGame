@@ -10,9 +10,11 @@ public class Entity extends ImageView{
     protected GameState world;
     
     //Character Properties
+    protected int health;
     protected int moveSpeed;
     protected int jumpSpeed;
     protected int jumpHeight;
+    protected int fireSpeed;
     protected boolean jumped;
     protected boolean jumping;
     protected boolean falling;
@@ -21,9 +23,13 @@ public class Entity extends ImageView{
     protected boolean attacking;
     protected boolean scratching;
     protected boolean justScratched;
+    protected boolean firing;
+    protected boolean justFired;
     protected String direction;
     protected int jumpTime;
     protected boolean justJumped;
+    public boolean alive;
+    protected Image deathSprite;
     
     //Collision with map
     protected boolean onGround;
@@ -37,7 +43,7 @@ public class Entity extends ImageView{
     protected boolean bottomMiddle;
     public boolean hitLeft;
     public boolean hitRight;
-    protected List<ImageView> tilesToCheck = new ArrayList<>();
+    protected List<ImageView> tilesToCheck;
     
     //currentAction is the action enum that is being done
     protected int currentAction;
@@ -45,11 +51,13 @@ public class Entity extends ImageView{
     protected int animationCycler;
     //when timeToUpdateCycler == UPDATE_TIME, it changes the sprite image
     protected int timeToUpdateCycler;
+    //when deathCounter == DEATH_TIME, the level resets
+    protected int deathCounter;
     
     
-    //Animation sprites and enums
-    protected static final ArrayList<Image[]> sprites = null;
+    //Animation enums
     protected static final int UPDATE_TIME = 15;
+    protected static final int DEATH_TIME = 10;
     protected static final int IDLE = 0;
     protected static final int WALKING = 1;
     protected static final int JUMPING = 2;
@@ -61,6 +69,52 @@ public class Entity extends ImageView{
     public Entity(Image image, GameState world){
         super(image);
         this.world = world;
+        tilesToCheck = new ArrayList<>();
+    }
+    
+    protected void checkDeath(){
+        //alive added to prevent deathSprite overwrite
+        //If health is exhausted
+        if (health == 0 && alive){
+            alive = false;
+            deathSprite = this.getImage();
+            animationCycler = timeToUpdateCycler = 0;
+        }
+        //If entity goes off the map
+        else if(
+                this.getX() <= 0 ||
+                this.getX() + this.getFitWidth() >= world.getWidth() ||
+                this.getY() + this.getFitHeight() >= world.getHeight()
+                ){
+            health = 0;
+        }
+    }
+    
+    public void die(){
+        //Change the sprite to represent death
+        timeToUpdateCycler++;
+        if (timeToUpdateCycler == UPDATE_TIME){
+            if (animationCycler == 0){
+                setImage(deathSprite);
+            }
+            else if (animationCycler == 1){
+                setImage(world.blankTile);
+            }
+            animationCycler++;
+            timeToUpdateCycler = 0;
+            if (animationCycler > 1){
+                animationCycler = 0;
+            }
+            deathCounter++;
+        }
+        //Remove the entity from the world
+        if (deathCounter == DEATH_TIME){
+            world.entities.getChildren().remove(this);
+            //if the entity was the player, reset the world
+            if (this instanceof Player){
+                world.reset();
+            }
+        }
     }
     
     public boolean checkObjectCollision(ImageView first, ImageView second){

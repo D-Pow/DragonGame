@@ -1,0 +1,4 @@
+Player: 30 x 30
+Fireball: 16 x 16
+Explosion: 30 x 30
+Snail: 20(h) x 22(w)

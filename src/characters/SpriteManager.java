@@ -21,23 +21,12 @@ public class SpriteManager {
     public static final int FIRING = 5;
     public static final int SCRATCHING = 6;
     
-    public SpriteManager(String s){
-        switch(s){
-            case "Player":
-                initPlayerSprites("Right");
-                initPlayerSprites("Left");
-                break;
-            case "Enemy":
-                initEnemySprites();
-                break;
-            default:
-                System.err.println("Must input correct sprite type");
-                break;
-        }
+    public SpriteManager(){
     }
     
     /**
-     * Initialize the player's sprites.
+     * Initialize the player's sprites. Player sprites are split
+     * into left and right images
      */
     private void initPlayerSprites(String s){
         ArrayList<Image[]> playerSprites = new ArrayList<>();
@@ -47,45 +36,45 @@ public class SpriteManager {
         //BufferedImage is needed for subImage method.
         Image player = null;
         if (s.equals("Right")){
-            player = new Image("characterimages/PlayerSpritesRight.gif");
+            player = new Image("characterimages/PlayerSpritesRight.png");
         }
         else if(s.equals("Left")){
-            player = new Image("characterimages/PlayerSpritesLeft.gif");
+            player = new Image("characterimages/PlayerSpritesLeft.png");
         }
         playerSpritesFile = SwingFXUtils.fromFXImage(player, null);
         
         //For each type of movement (this works since each movement was
         //on a different row)
-        for (int i = 0; i < numberOfSpriteFrames.length; i++){
-            Image[] temp;
+        for (int row = 0; row < numberOfSpriteFrames.length; row++){
+            Image[] currentMovementSprites;
             //The final row is extra long, so it doesn't fit perfectly
             //in spriteSize like the first 5 rows
-            if (i != 6){
+            if (row != 6){
                 //Set how large the BufferedImage array will be for the specific
                 //type of movement
-                temp = new Image[numberOfSpriteFrames[i]];
+                currentMovementSprites = new Image[numberOfSpriteFrames[row]];
                 //Since each sprite has no padding between them, add each sprite
                 //image according to how far it is from the left edge
-                for (int j = 0; j < temp.length; j++){
+                for (int col = 0; col < currentMovementSprites.length; col++){
                     BufferedImage sprite = playerSpritesFile.getSubimage(
-                            j*spriteSize, i*spriteSize,
+                            col*spriteSize, row*spriteSize,
                             spriteSize, spriteSize);
                     //SwingFXUtils converts from BufferedImage to FXImage
-                    temp[j] = SwingFXUtils.toFXImage(sprite, null);
+                    currentMovementSprites[col] = SwingFXUtils.toFXImage(sprite, null);
                 }
             }
             //For scratching animation
             else{
-                temp = new Image[numberOfSpriteFrames[i]];
-                for (int j = 0; j < temp.length; j++){
+                currentMovementSprites = new Image[numberOfSpriteFrames[row]];
+                for (int j = 0; j < currentMovementSprites.length; j++){
                     BufferedImage sprite = playerSpritesFile.getSubimage(
                             //Only difference is j*spriteSize*2
-                            j*spriteSize*2, i*spriteSize,
+                            j*spriteSize*2, row*spriteSize,
                             spriteSize*2, spriteSize);
-                    temp[j] = SwingFXUtils.toFXImage(sprite, null);
+                    currentMovementSprites[j] = SwingFXUtils.toFXImage(sprite, null);
                 }
             }
-            playerSprites.add(temp);
+            playerSprites.add(currentMovementSprites);
         }
         if (s.equals("Right")){
             playerSpritesRight = new ArrayList(playerSprites);
@@ -96,14 +85,39 @@ public class SpriteManager {
     }
     
     public ArrayList<Image[]> getPlayerSpritesRight(){
+        initPlayerSprites("Right");
         return playerSpritesRight;
     }
     
     public ArrayList<Image[]> getPlayerSpritesLeft(){
+        initPlayerSprites("Left");
         return playerSpritesLeft;
     }
     
-    private void initEnemySprites(){
+    public ArrayList<Image[]> getFireballSprites(){
+        int fireballSpriteSize = 16;
+        ArrayList<Image[]> fireballSpriteImages = new ArrayList<>();
+        Image origFireballImage = new Image("characterimages/Fireball.png");
         
+        numberOfSpriteFrames = new int[]{4, 3};
+        BufferedImage fireballImage = SwingFXUtils.fromFXImage(origFireballImage, null);
+        
+        for (int row = 0; row < numberOfSpriteFrames.length; row++){
+            Image[] currentTypeOfFireballImage = new Image[numberOfSpriteFrames[row]];
+            
+            for (int col = 0; col < numberOfSpriteFrames[row]; col++){
+                int x = col*fireballSpriteSize;
+                int y = row*fireballSpriteSize;
+                int w, h;
+                w = h = fireballSpriteSize;
+                BufferedImage sprite = fireballImage.getSubimage(
+                        x, y, w, h);
+                currentTypeOfFireballImage[col] = SwingFXUtils.toFXImage(sprite, null);
+            }
+            
+            fireballSpriteImages.add(currentTypeOfFireballImage);
+        }
+        
+        return fireballSpriteImages;
     }
 }

@@ -39,14 +39,14 @@ public class Level2 extends GameState{
     
     @Override
     public void initObjects(){
-        //Making the player also adds the keyListener to the gameState
-        player = new Player(this);
         //Set start location
-        player.setX(player.getFitWidth());
-        player.setY(h - player.getFitHeight()*1.5);
-        characters.getChildren().add(player);
+        double playerStartX = GameState.ENTITY_SIZE*1.5;
+        double playerStartY = h - GameState.ENTITY_SIZE*3.5;
+        //Making the player also adds the keyListener to the gameState
+        player = new Player(this, playerStartX, playerStartY);
+        entities.getChildren().add(player);
         
-        this.getChildren().add(characters);
+        this.getChildren().add(entities);
     }
     
     public void runGame(){
