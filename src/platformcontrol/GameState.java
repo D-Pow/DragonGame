@@ -41,12 +41,14 @@ abstract public class GameState extends Pane{
     //Characters
     public Player player;
     public Group entities = new Group();
+    public Group enemies = new Group();
     
     //Used in Entity class for the death sequence
     public Image blankTile;
     
     private static final int NUMTILEROWS = 2;
-    public static final int ENTITY_SIZE = 80;
+    public static final int PLAYER_SIZE = 80;
+    public static final int ENEMY_SIZE = 50;
     public static final int MAP_TILE_SIZE = 50;
     
     abstract public void initObjects();

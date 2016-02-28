@@ -19,8 +19,8 @@ public class Fireball extends Entity {
     public Fireball(String direction, int Speed, GameState world) {
         super((Image) null, world);
         this.direction = direction;
-        setFitWidth(GameState.ENTITY_SIZE / 2);
-        setFitHeight(GameState.ENTITY_SIZE / 2);
+        setFitWidth(GameState.PLAYER_SIZE / 2);
+        setFitHeight(GameState.PLAYER_SIZE / 2);
         if (direction.equals("Left")) {
             //Still need to set fireball's position
             setX(world.player.getX() - getFitWidth()/2);
@@ -29,7 +29,7 @@ public class Fireball extends Entity {
             //Still need to set fireball's position
             setX(world.player.getX() + getFitWidth());
         }
-        setY(world.player.getY() + GameState.ENTITY_SIZE / 4);
+        setY(world.player.getY() + GameState.PLAYER_SIZE / 4);
         speed = Speed;
         SpriteManager sm = new SpriteManager();
         fireballSprites = sm.getFireballSprites();
@@ -38,7 +38,8 @@ public class Fireball extends Entity {
         setImage(startImage);
     }
 
-    public void updateFireball() {
+    @Override
+    public void updateEntity() {
         if (!hitObject) {
             if (direction.equals("Left")) {
                 setX(getX() - speed);
@@ -47,9 +48,14 @@ public class Fireball extends Entity {
             }
         }
         checkFireballCollision();
-        changeFireballSprite();
+        updateImage();
     }
-
+    
+    /**
+     * Replaces the entity's checkMapCollision() method
+     * because it needs to toggle if the fireball hits
+     * any object.
+     */
     public void checkFireballCollision() {
         //Check map collision
         for (Node n : world.map.getChildren()) {
@@ -57,7 +63,10 @@ public class Fireball extends Entity {
             int tileNumber = world.mapTileNumbers.get(tileIndex);
             if (tileNumber > world.numDecorationTiles - 1) {
                 ImageView tile = (ImageView) n;
-                if (checkObjectCollision((ImageView) this, tile)) {
+                //Delete fireball if it collides with map or
+                //if it goes off-screen
+                if (checkObjectCollision((ImageView) this, tile) ||
+                        getX() > world.getWidth() || getX() + getFitWidth() < 0) {
                     if (!hitObject) {
                         //Reset animation cycler only if the fireball newly
                         //collided with a map tile
@@ -73,7 +82,8 @@ public class Fireball extends Entity {
         //Check enemy collision
     }
 
-    public void changeFireballSprite() {
+    @Override
+    public void updateImage() {
         //0 = Fireball is still active
         //1 = Fireball must dissipated
         timeToUpdateCycler++;

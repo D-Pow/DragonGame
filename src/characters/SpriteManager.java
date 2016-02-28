@@ -11,8 +11,6 @@ public class SpriteManager {
     private ArrayList<Image[]> playerSpritesLeft;
     private int[] numberOfSpriteFrames;
     
-    public static final int spriteSize = 30;
-    
     public static final int IDLE = 0;
     public static final int WALKING = 1;
     public static final int JUMPING = 2;
@@ -30,6 +28,7 @@ public class SpriteManager {
      */
     private void initPlayerSprites(String s){
         ArrayList<Image[]> playerSprites = new ArrayList<>();
+        int spriteSize = 30;
         //Make a list of how many sprite frames per type of movement
         numberOfSpriteFrames = new int[]{2, 8, 1, 2, 4, 2, 5};
         //Load the image from resources and turn into buffered image
@@ -94,6 +93,22 @@ public class SpriteManager {
         return playerSpritesLeft;
     }
     
+    public Image[] getDeathSprites(){
+        Image origDeathImage = new Image("characterimages/DeathSprites.png");
+        int size = 30;
+        numberOfSpriteFrames = new int[]{6};
+        Image[] deathSprites = new Image[numberOfSpriteFrames[0]];
+        BufferedImage deathImage = SwingFXUtils.fromFXImage(origDeathImage, null);
+        
+        for (int col = 0; col < numberOfSpriteFrames[0]; col++){
+            BufferedImage sprite = deathImage.getSubimage(
+                    col*size, 0, size, size);
+            deathSprites[col] = SwingFXUtils.toFXImage(sprite, null);
+        }
+        
+        return deathSprites;
+    }
+    
     public ArrayList<Image[]> getFireballSprites(){
         int fireballSpriteSize = 16;
         ArrayList<Image[]> fireballSpriteImages = new ArrayList<>();
@@ -120,4 +135,28 @@ public class SpriteManager {
         
         return fireballSpriteImages;
     }
+    
+    public ArrayList<Image[]> getSnailSprites(){
+        ArrayList<Image[]> snailSprites = new ArrayList<>();
+        int snailSpriteH = 20;
+        int snailSpriteW = 22;
+        Image origSnailImage = new Image("characterimages/SnailEnemy.png");
+        
+        numberOfSpriteFrames = new int[]{3};
+        Image[] sprites = new Image[numberOfSpriteFrames[0]];
+        BufferedImage snailImage = SwingFXUtils.fromFXImage(origSnailImage, null);
+        
+        for (int col = 0; col < numberOfSpriteFrames[0]; col++){
+            BufferedImage sprite = snailImage.getSubimage(
+                    col*snailSpriteW, 0*snailSpriteH,
+                    snailSpriteW, snailSpriteH);
+            sprites[col] = SwingFXUtils.toFXImage(sprite, null);
+        }
+        
+        snailSprites.add(null); //Placeholder for IDLE action
+        snailSprites.add(sprites); //Matches the WALKING action enum
+        
+        return snailSprites;
+    }
+    
 }

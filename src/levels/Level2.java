@@ -40,8 +40,8 @@ public class Level2 extends GameState{
     @Override
     public void initObjects(){
         //Set start location
-        double playerStartX = GameState.ENTITY_SIZE*1.5;
-        double playerStartY = h - GameState.ENTITY_SIZE*3.5;
+        double playerStartX = GameState.PLAYER_SIZE*1.5;
+        double playerStartY = h - GameState.PLAYER_SIZE*3.5;
         //Making the player also adds the keyListener to the gameState
         player = new Player(this, playerStartX, playerStartY);
         entities.getChildren().add(player);
@@ -50,7 +50,7 @@ public class Level2 extends GameState{
     }
     
     public void runGame(){
-        player.updatePlayer();
+        player.updateEntity();
         //moveEnemies();
     }
 }

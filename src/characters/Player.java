@@ -17,6 +17,11 @@ public class Player extends Entity{
     ArrayList<Image[]> playerSprites;//which of the right/left sprites is active
     private int origWidth;
     public boolean inCenter; //Decide whether or not to move map
+    int scratchDamage;
+    int fireDamage;
+    int fireEnergyAtStart;
+    int fireEnergy;
+    int fireCost;
     
     public Player(GameState world, double startX, double startY){
         super(null, world);
@@ -26,18 +31,24 @@ public class Player extends Entity{
         playerSprites = null;
         currentAction = IDLE;
         this.setImage(rightSprites.get(IDLE)[0]);
-        int size = GameState.ENTITY_SIZE;
+        int size = GameState.PLAYER_SIZE;
         setX(startX);
         setY(startY);
         setFitWidth(size);
         setFitHeight(size);
         origWidth = size;
         direction = "Right";
+        moving = false; //To counter the default moving = true from Entity
         moveSpeed = 2;
         fireSpeed = 4;
         jumpSpeed = 3;
         jumpHeight = 40; //Pixel jump height = jumpHeight*jumpSpeed
         health = 500;
+        scratchDamage = 100;
+        fireDamage = 50;
+        fireEnergyAtStart = 70;
+        fireEnergy = fireEnergyAtStart;
+        fireCost = 10;
         alive = true;
         initWorldKeyListener();
     }
@@ -49,9 +60,10 @@ public class Player extends Entity{
      * This allows for simple thread construction in
      * each level.
      */
-    public void updatePlayer(){
+    @Override
+    public void updateEntity(){
         if (alive){
-            checkMapCollision();
+            checkMapCollision(this);
             //checkEnemyCollision();
             checkMapLocation();
             move();
@@ -64,6 +76,7 @@ public class Player extends Entity{
             die();
         }
     }
+    
     
     public void move(){
         if (moving && !attacking){
@@ -139,28 +152,6 @@ public class Player extends Entity{
         }
     }
     
-    public void fall(){
-        //if (getY() >= world.getHeight() - getFitHeight()){
-        if(onGround){
-            //Allows player to jump again
-            jumpTime = 0;
-            if (!moving){
-                if (!attacking) {currentAction = IDLE;}
-            }
-        }
-        //else if (getY() < world.getHeight() - getFitHeight()){
-        else if(!onGround){
-            if (gliding){
-                setY(getY() + jumpSpeed/3);
-                if (!attacking) {currentAction = GLIDING;}
-            }
-            else{
-                setY(getY() + jumpSpeed);
-                if (!attacking) {currentAction = FALLING;}
-            }
-        }
-    }
-    
     public void scratch(){
         if (!justScratched){
             attacking = true;
@@ -171,9 +162,11 @@ public class Player extends Entity{
     }
     
     public void fire(){
-        if (!justFired){
+        if (!justFired && fireEnergy > fireCost){
             attacking = true;
             firing = true;
+            justFired = true;
+            fireEnergy -= fireCost;
             currentAction = FIRING;
             animationCycler = 0;
             timeToUpdateCycler = UPDATE_TIME - 1;
@@ -191,31 +184,13 @@ public class Player extends Entity{
             Node child = iterator.next();
             if (child instanceof Fireball){
                 Fireball fireball = (Fireball) child;
-                fireball.updateFireball();
+                fireball.updateEntity();
                 if (fireball.dissipated){
                     iterator.remove();
                 }
             }
             
         }
-    }
-    
-    public void checkMapCollision(){
-        //For each map tile
-        for (Node n : world.map.getChildren()){
-            int tileIndex = world.map.getChildren().indexOf(n);
-            int tileNumber = world.mapTileNumbers.get(tileIndex);
-            //If the tile isn't a ghost (decoration) tile
-            if (tileNumber > world.numDecorationTiles - 1){
-                ImageView tile = (ImageView) n;
-                //Check collision
-                if (checkObjectCollision((ImageView) this, tile)){
-                    tilesToCheck.add(tile);
-                }
-            }
-        }
-        updateCollisions((ImageView)this, tilesToCheck);
-        tilesToCheck.clear();
     }
     
     public void checkEnemyCollision(){
@@ -253,7 +228,8 @@ public class Player extends Entity{
         
     }
     
-    protected void updateImage(){
+    @Override
+    public void updateImage(){
         timeToUpdateCycler++;
         if (timeToUpdateCycler == UPDATE_TIME){
             switch (direction){
@@ -295,6 +271,9 @@ public class Player extends Entity{
                 }
                 setFitWidth(origWidth*2);
             }
+            if (fireEnergy < fireEnergyAtStart){
+                fireEnergy++;
+            }
             setImage(playerSprites.get(currentAction)[animationCycler]);
             animationCycler++;
             timeToUpdateCycler = 0;
@@ -323,7 +302,6 @@ public class Player extends Entity{
             }
             if (e.getCode() == KeyCode.K){
                 fire();
-                justFired = true;
             }
         });
         
