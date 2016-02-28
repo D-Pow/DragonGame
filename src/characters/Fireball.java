@@ -46,15 +46,15 @@ public class Fireball extends Entity {
             } else if (direction.equals("Right")) {
                 setX(getX() + speed);
             }
+            checkFireballCollision();
         }
-        checkFireballCollision();
         updateImage();
     }
     
     /**
      * Replaces the entity's checkMapCollision() method
      * because it needs to toggle if the fireball hits
-     * any object.
+     * any object, including an enemy.
      */
     public void checkFireballCollision() {
         //Check map collision
@@ -65,7 +65,7 @@ public class Fireball extends Entity {
                 ImageView tile = (ImageView) n;
                 //Delete fireball if it collides with map or
                 //if it goes off-screen
-                if (checkObjectCollision((ImageView) this, tile) ||
+                if (checkObjectCollision(this, tile) ||
                         getX() > world.getWidth() || getX() + getFitWidth() < 0) {
                     if (!hitObject) {
                         //Reset animation cycler only if the fireball newly
@@ -79,7 +79,16 @@ public class Fireball extends Entity {
             }
         }
 
-        //Check enemy collision
+        for (Node m : world.enemies.getChildren()){
+            Entity enemy = (Entity) m;
+            if (checkObjectCollision(this, enemy)){
+                hitObject = true;
+                animationCycler = 0;
+                enemy.health -= world.player.fireDamage;
+                enemy.flinching = true;
+                enemy.moving = false;
+            }
+        }
     }
 
     @Override

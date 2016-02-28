@@ -67,8 +67,4 @@ public class Level1 extends GameState{
         this.getChildren().addAll(entities, map);
     }
     
-    public void runGame(){
-        player.updateEntity();
-        //moveEnemies();
-    }
 }

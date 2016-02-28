@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import platformcontrol.GameState;
@@ -41,15 +40,12 @@ public class Player extends Entity{
         moving = false; //To counter the default moving = true from Entity
         moveSpeed = 2;
         fireSpeed = 4;
-        jumpSpeed = 3;
-        jumpHeight = 40; //Pixel jump height = jumpHeight*jumpSpeed
         health = 500;
         scratchDamage = 100;
         fireDamage = 50;
         fireEnergyAtStart = 70;
         fireEnergy = fireEnergyAtStart;
         fireCost = 10;
-        alive = true;
         initWorldKeyListener();
     }
     
@@ -64,7 +60,7 @@ public class Player extends Entity{
     public void updateEntity(){
         if (alive){
             checkMapCollision(this);
-            //checkEnemyCollision();
+            checkEnemyCollision();
             checkMapLocation();
             move();
             jump();
@@ -78,6 +74,7 @@ public class Player extends Entity{
     }
     
     
+    @Override
     public void move(){
         if (moving && !attacking){
             if (!attacking) {
@@ -130,28 +127,6 @@ public class Player extends Entity{
         }
     }
     
-    public void jump(){
-        //Try to jump
-        if (jumping && jumpTime < jumpHeight){
-            //jumpTime is how long you can jump before falling
-            //Once jumpTime = jumpHeight, you start falling
-            //regardless of if you are trying to jump (jumping = true)
-            jumpTime++;
-            onGround = bottomLeft = bottomRight = bottomMiddle = false;
-            setY(getY() - jumpSpeed);
-            if (!attacking) {currentAction = JUMPING;}
-        }
-        //If player can't jump, then fall
-        else if (!jumping || jumpTime >= jumpHeight){
-            //Setting jumpTime = jumpHeight prevents jumping
-            //while in the air
-            jumpTime = jumpHeight;
-            //Since player isn't jumping, he is falling.
-            //This is only called if jumping fails.
-            fall();
-        }
-    }
-    
     public void scratch(){
         if (!justScratched){
             attacking = true;
@@ -194,10 +169,29 @@ public class Player extends Entity{
     }
     
     public void checkEnemyCollision(){
-        //For enemy:
-        ImageView enemy = null;
-        checkObjectCollision((ImageView) this, enemy);
-        //checkDeath();
+        if (!attacking && !flinching) {
+            for (Node n : world.enemies.getChildren()) {
+                Entity enemy = (Entity) n;
+                if (checkObjectCollision(this, enemy) && enemy.alive){
+                    health -= enemy.enemyDamage;
+                    flinchImage = playerSprites.get(FIRING)[0];
+                    flinching = true;
+                }
+            }
+        }
+        else if (attacking){
+            for (Node m : world.enemies.getChildren()) {
+                Entity enemy = (Entity) m;
+                if (scratching && !enemy.justHurt){
+                    if (checkObjectCollision(this, enemy)){
+                        enemy.health -= scratchDamage;
+                        enemy.justHurt = true;
+                        enemy.flinching = true;
+                    }
+                }
+                //Fireball collisions are taken care of in Fireball class
+            }
+        }
     }
     
     public void checkMapLocation(){
@@ -240,42 +234,57 @@ public class Player extends Entity{
                     playerSprites = new ArrayList(leftSprites);
                     break;
             }
-            //currentAction will equal one of the action enums
-            if (animationCycler >= playerSprites.get(currentAction).length){
-                animationCycler = 0;
-                //The attacking sequence should only play through once
-                if (attacking){
-                    attacking = false;
-                }
-                if (scratching){
-                    scratching = false;
-                    currentAction = IDLE;
-                    if (direction.equals("Left")) {
-                        setX(getX() + origWidth);
+            if (!flinching){
+                //currentAction will equal one of the action enums
+                if (animationCycler >= playerSprites.get(currentAction).length){
+                    animationCycler = 0;
+                    //The attacking sequence should only play through once
+                    if (attacking){
+                        attacking = false;
                     }
-                    setFitWidth(origWidth);
-                    justScratched = false;
+                    if (scratching){
+                        scratching = false;
+                        currentAction = IDLE;
+                        if (direction.equals("Left")) {
+                            setX(getX() + origWidth);
+                        }
+                        setFitWidth(origWidth);
+                        justScratched = false;
+                    }
+                    if (firing){
+                        firing = false;
+                        currentAction = IDLE;
+                        justFired = false;
+                    }
                 }
-                if (firing){
-                    firing = false;
-                    currentAction = IDLE;
-                    justFired = false;
+                //Since the scratch image width is twice that of the normal sprite
+                if (attacking && scratching){
+                    //To compensate for the extra width, the character is moved
+                    //only if facing left
+                    if (direction.equals("Left") && animationCycler == 0) {
+                        setX(getX() - origWidth);
+                    }
+                    setFitWidth(origWidth*2);
+                }
+                if (fireEnergy < fireEnergyAtStart){
+                    fireEnergy++;
+                }
+                setImage(playerSprites.get(currentAction)[animationCycler]);
+                animationCycler++;
+            }
+            else if (flinching){
+                if (flinchCycler == 1 || flinchCycler == 3){
+                    setImage(flinchImage);
+                }
+                else if (flinchCycler == 0 || flinchCycler == 2){
+                    setImage(world.blankTile);
+                }
+                flinchCycler++;
+                if (flinchCycler == 4){
+                    flinchCycler = 0;
+                    flinching = false;
                 }
             }
-            //Since the scratch image width is twice that of the normal sprite
-            if (attacking && scratching){
-                //To compensate for the extra width, the character is moved
-                //only if facing left
-                if (direction.equals("Left") && animationCycler == 0) {
-                    setX(getX() - origWidth);
-                }
-                setFitWidth(origWidth*2);
-            }
-            if (fireEnergy < fireEnergyAtStart){
-                fireEnergy++;
-            }
-            setImage(playerSprites.get(currentAction)[animationCycler]);
-            animationCycler++;
             timeToUpdateCycler = 0;
         }
     }
@@ -283,12 +292,16 @@ public class Player extends Entity{
     private void initWorldKeyListener(){
         world.addEventHandler(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
             if (e.getCode() == KeyCode.A){
-                direction = "Left";
-                moving = true;
+                if (!attacking){
+                    direction = "Left";
+                    moving = true;
+                }
             }
             else if (e.getCode() == KeyCode.D){
-                direction = "Right";
-                moving = true;
+                if (!attacking){
+                    direction = "Right";
+                    moving = true;
+                }
             }
             if (e.getCode() == KeyCode.SPACE){
                 jumping = true;

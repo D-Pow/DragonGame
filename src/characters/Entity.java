@@ -1,6 +1,7 @@
 package characters;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
@@ -31,6 +32,11 @@ abstract public class Entity extends ImageView {
     protected int jumpTime;
     protected boolean justJumped;
     public boolean alive;
+    protected int enemyDamage;
+    protected Image flinchImage;
+    protected boolean flinching;
+    protected int flinchCycler;
+    protected boolean justHurt;
 
     //Collision with map
     protected boolean onGround;
@@ -77,6 +83,9 @@ abstract public class Entity extends ImageView {
         alive = true;
         moving = true; //Default for enemies
         currentAction = WALKING; //Default for enemies
+        jumpSpeed = 3;
+        jumpHeight = 40; //Pixel jump height = jumpHeight*jumpSpeed
+        animationCycler = timeToUpdateCycler = 0;
     }
 
     /**
@@ -130,6 +139,29 @@ abstract public class Entity extends ImageView {
                 currentAction = IDLE;
             }
         }
+        jump();
+    }
+    
+    public void jump(){
+        //Try to jump
+        if (jumping && jumpTime < jumpHeight){
+            //jumpTime is how long you can jump before falling
+            //Once jumpTime = jumpHeight, you start falling
+            //regardless of if you are trying to jump (jumping = true)
+            jumpTime++;
+            onGround = bottomLeft = bottomRight = bottomMiddle = false;
+            setY(getY() - jumpSpeed);
+            if (!attacking) {currentAction = JUMPING;}
+        }
+        //If player can't jump, then fall
+        else if (!jumping || jumpTime >= jumpHeight){
+            //Setting jumpTime = jumpHeight prevents jumping
+            //while in the air
+            jumpTime = jumpHeight;
+            //Since player isn't jumping, he is falling.
+            //This is only called if jumping fails.
+            fall();
+        }
     }
 
     public void fall() {
@@ -169,7 +201,7 @@ abstract public class Entity extends ImageView {
             health = 0;
         }
     }
-
+    
     public void die() {
         //Change the sprite to represent death
         timeToUpdateCycler++;
@@ -184,7 +216,18 @@ abstract public class Entity extends ImageView {
         }
         //Remove the entity from the world
         if (deathCounter == DEATH_TIME) {
-            world.entities.getChildren().remove(this);
+            try {
+                //If Player, remove from entities Group
+                if (this instanceof Player){
+                    world.entities.getChildren().remove(this);
+                }
+                //Else, it's an enemy; remove from enemeies Group
+                else{
+                    world.enemies.getChildren().remove(this);
+                }
+            } catch(ConcurrentModificationException e){
+                //This will happen sometimes. It doesn't affect gameplay.
+            }
             //if the entity was the player, reset the world
             if (this instanceof Player) {
                 world.reset();
@@ -198,10 +241,27 @@ abstract public class Entity extends ImageView {
     public void updateImage() {
         timeToUpdateCycler++;
         if (timeToUpdateCycler == UPDATE_TIME) {
-            setImage(sprites.get(currentAction)[animationCycler]);
-            animationCycler++;
-            if (animationCycler >= sprites.get(currentAction).length) {
-                animationCycler = 0;
+            if (!flinching){
+                setImage(sprites.get(currentAction)[animationCycler]);
+                animationCycler++;
+                if (animationCycler >= sprites.get(currentAction).length) {
+                    animationCycler = 0;
+                }
+            }
+            else{
+                if (flinchCycler == 0 || flinchCycler == 2){
+                    setImage(flinchImage);
+                }
+                else if (flinchCycler == 1 || flinchCycler == 3){
+                    setImage(world.blankTile);
+                }
+                flinchCycler++;
+                if (flinchCycler == 4){
+                    flinchCycler = 0;
+                    flinching = false;
+                    moving = true;
+                    justHurt = false;
+                }
             }
             timeToUpdateCycler = 0;
         }

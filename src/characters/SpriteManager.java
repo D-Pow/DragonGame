@@ -155,6 +155,8 @@ public class SpriteManager {
         
         snailSprites.add(null); //Placeholder for IDLE action
         snailSprites.add(sprites); //Matches the WALKING action enum
+        snailSprites.add(sprites); //Same sprites for the JUMPING action
+        snailSprites.add(sprites); //Same sprites for the FALLING action
         
         return snailSprites;
     }

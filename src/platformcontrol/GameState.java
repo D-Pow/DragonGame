@@ -1,5 +1,6 @@
 package platformcontrol;
 
+import characters.Entity;
 import characters.Player;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -60,6 +61,13 @@ abstract public class GameState extends Pane{
         mapWidth = mapTiles[0].length*MAP_TILE_SIZE;
     }
     
+    public void runGame(){
+        player.updateEntity();
+        for (Node n : enemies.getChildren()){
+            ((Entity) n).updateEntity();
+        }
+    }
+    
     public void reset(){
         gameThread.stop(); //Necessary to prevent lagging
         gsm.changeState(gsm.getCurrentState());
@@ -80,6 +88,11 @@ abstract public class GameState extends Pane{
         for (Node n : map.getChildren()){
             ImageView tile = (ImageView) n;
             tile.setX(tile.getX() + moveSpeed);
+        }
+        
+        for (Node m : enemies.getChildren()){
+            ImageView enemy = (ImageView) m;
+            enemy.setX(enemy.getX() + moveSpeed);
         }
     }
     
