@@ -1,6 +1,7 @@
 package characters;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -53,9 +54,10 @@ public class Player extends Entity{
             checkMapCollision();
             //checkEnemyCollision();
             checkMapLocation();
-            updateImage();
             move();
             jump();
+            updateImage();
+            updateFireballs();
             checkDeath();
         }
         else{
@@ -174,7 +176,27 @@ public class Player extends Entity{
             firing = true;
             currentAction = FIRING;
             animationCycler = 0;
+            timeToUpdateCycler = UPDATE_TIME - 1;
+            updateImage(); //Force player image to change so that it syncs
+                           //with the formation of the fireball
+            animationCycler = 0;
             Fireball fireball = new Fireball(direction, fireSpeed, world);
+            world.entities.getChildren().add(fireball);
+        }
+    }
+    
+    public void updateFireballs(){
+        Iterator<Node> iterator = world.entities.getChildren().iterator();
+        while (iterator.hasNext()){
+            Node child = iterator.next();
+            if (child instanceof Fireball){
+                Fireball fireball = (Fireball) child;
+                fireball.updateFireball();
+                if (fireball.dissipated){
+                    iterator.remove();
+                }
+            }
+            
         }
     }
     
