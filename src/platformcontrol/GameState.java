@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -51,6 +53,49 @@ abstract public class GameState extends Pane{
     public static final int PLAYER_SIZE = 80;
     public static final int ENEMY_SIZE = 50;
     public static final int MAP_TILE_SIZE = 50;
+    
+    //Enemies
+    private final int SNAIL_ENEMY = -1;
+    
+    /**
+     * Constructor used in Menu/LoadScreen classes.
+     */
+    public GameState(){}
+    
+    /**
+     * Constructor used in Level classes.
+     * @param gsm GameStateManager used for the game
+     */
+    public GameState(GameStateManager gsm){
+        this.gsm = gsm;
+        //w and h are only necessary for initObjects(), not for
+        //player and enemy movement
+        w = gsm.width;
+        h = gsm.height - 0.25*GameState.PLAYER_SIZE;
+        setHeight(h);
+        setWidth(w);
+        
+        initObjects();
+        
+        running = true;
+        GameState.gameThread = new Thread(new Runnable(){
+            @Override
+            public void run() {
+                while (true){
+                    if (running){
+                        try {
+                            Platform.runLater(() -> runGame());
+                            TimeUnit.MILLISECONDS.sleep(10);
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+        
+        GameState.gameThread.start();
+    }
     
     abstract public void initObjects();
     
@@ -108,9 +153,27 @@ abstract public class GameState extends Pane{
         //The map should start with the bottom-left corner in the screen,
         //so the map is initiated with the lowest row first, and the rest later.
         for (int row = mapTiles.length - 1; row >= 0; row--){
-            for (int col = 0; col < mapTiles[0].length; col++){
+            for (int col = 0; col < mapTiles[row].length; col++){
                 //Pull tile number from the map matrix
                 tile = mapTiles[row][col];
+                //If the tile number is < 0, it represents an enemy
+                //location. Send the level the corresponging location
+                //for the enemy.
+                /*
+                ** Code to be implemented next update: This will make
+                * Loading enemy locations much easier.
+                if (tile < 0){
+                    switch(tile){
+                        case -1:
+                            double snailStartX = GameState.MAP_TILE_SIZE * col;
+                            double snailStartY = GameState.MAP_TILE_SIZE*row;
+                            SnailEnemy snail = new SnailEnemy(snailStartX, snailStartY, this);
+                            enemies.getChildren().add(snail);
+                            break;
+                    }
+                    tile = 0;
+                }
+                */
                 //Convert the single integer into a row/column location
                 tileRow = 0;
                 tileCol = tile;

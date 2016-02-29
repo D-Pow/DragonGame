@@ -182,7 +182,8 @@ public class Player extends Entity{
         else if (attacking){
             for (Node m : world.enemies.getChildren()) {
                 Entity enemy = (Entity) m;
-                if (scratching && !enemy.justHurt){
+                if (scratching && !enemy.justHurt){ //Prevents one attack from
+                                                    //doing multiple hits
                     if (checkObjectCollision(this, enemy)){
                         enemy.health -= scratchDamage;
                         enemy.justHurt = true;

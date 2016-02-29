@@ -18,7 +18,7 @@ public class SnailEnemy extends Entity{
         setFitWidth(GameState.ENEMY_SIZE);
         setFitHeight(GameState.ENEMY_SIZE);
         direction = "Right";
-        health = 200;
+        health = 100;
         moveSpeed = 1;
         enemyDamage = 50;
         flinchImage = sprites.get(currentAction)[0];

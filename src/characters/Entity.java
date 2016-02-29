@@ -191,7 +191,7 @@ abstract public class Entity extends ImageView {
     protected void checkDeath() {
         //alive added to prevent deathSprite overwrite
         //If health is exhausted
-        if (health == 0 && alive) {
+        if (health <= 0 && alive) {
             alive = false;
             animationCycler = timeToUpdateCycler = 0;
         } //If entity goes off the map
