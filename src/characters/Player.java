@@ -311,11 +311,15 @@ public class Player extends Entity{
                 gliding = true;
             }
             if (e.getCode() == KeyCode.J){
-                scratch();
-                justScratched = true;
+                if(!attacking){
+                    scratch();
+                    justScratched = true;
+                }
             }
             if (e.getCode() == KeyCode.K){
-                fire();
+                if(!attacking){
+                    fire();
+                }
             }
         });
         
