@@ -103,7 +103,7 @@ public class MenuScreen extends GameState {
                 StackPane root = new StackPane();
                 root.setBackground(background);
                 root.getChildren().add(new ImageView("/levelresources/Controls.png"));
-                Scene scene = new Scene(root, w, h);
+                Scene scene = new Scene(root, w*0.75, h*0.75);
                 Stage stage = new Stage();
                 stage.setScene(scene);
                 stage.show();

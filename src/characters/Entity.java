@@ -195,9 +195,7 @@ abstract public class Entity extends ImageView {
             alive = false;
             animationCycler = timeToUpdateCycler = 0;
         } //If entity goes off the map
-        else if (this.getX() <= 0
-                || this.getX() + this.getFitWidth() >= world.getWidth()
-                || this.getY() + this.getFitHeight() >= world.getHeight()) {
+        else if (this.getY() + this.getFitHeight() >= world.getHeight()) {
             health = 0;
         }
     }
