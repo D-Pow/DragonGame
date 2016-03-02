@@ -376,19 +376,31 @@ abstract public class Entity extends ImageView {
 
         //Now that the corners have been updated, have the appropriate affect
         //in the game.
-        if (entity.topLeft || entity.midLeft) {
+        if (entity.topLeft || entity.midLeft || 
+                (!entity.bottomMiddle && entity.bottomLeft)) {
             entity.hitLeft = true;
         }
-        if (entity.topRight || entity.midRight) {
+        if (entity.topRight || entity.midRight ||
+                (!entity.bottomMiddle && entity.bottomRight)) {
             entity.hitRight = true;
         }
-        if (entity.topLeft || entity.topRight || entity.topMiddle
-                || (entity.jumping == true && (entity.midLeft || entity.midRight))) {
+        if ((entity.bottomLeft || entity.bottomRight || entity.bottomMiddle) &&
+                //If one of the bottom corners or middle touches a map tile
+                //but not the edge of the character.
+                //This prevents the character from sticking to walls when
+                //falling or jumping
+                //The direction.equals part prevents the character from falling
+                //off a tile when it reaches the edge, i.e. forcing the character
+                //to fall only takes place when it's facing and touching a wall.
+                !(direction.equals("Left") && entity.bottomLeft && entity.hitLeft && !entity.bottomMiddle) &&
+                !(direction.equals("Right") && entity.bottomRight && entity.hitRight && !entity.bottomMiddle)) {
+            entity.onGround = true;
+        }
+        //If the top collides but not the sides (which would prevent
+        //jumping when on the ground touching a wall)
+        if (entity.topMiddle && !entity.midLeft && !entity.midRight) {
             entity.jumpTime = entity.jumpHeight;
             entity.topLeft = entity.topRight = entity.topMiddle = false;
-        }
-        if ((entity.bottomLeft || entity.bottomRight || entity.bottomMiddle)) {
-            entity.onGround = true;
         }
     }
 
