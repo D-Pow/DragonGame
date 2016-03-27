@@ -62,6 +62,7 @@ public class Player extends Entity{
             checkMapCollision(this);
             checkEnemyCollision();
             checkMapLocation();
+            checkWin();
             move();
             jump();
             updateImage();
@@ -195,6 +196,10 @@ public class Player extends Entity{
         }
     }
     
+    /**
+     * Checks if the player is in the center of the map.
+     * If it is, then move the map rather than the player.
+     */
     public void checkMapLocation(){
         double centerAreaWidth = world.getWidth()/6;
         double centerAreaX = (world.getWidth() - centerAreaWidth)/2;
@@ -221,6 +226,14 @@ public class Player extends Entity{
             inCenter = false;
         }
         
+    }
+    
+    /**
+     * Checks if the player won the level.
+     * Winning tiles are 15 and 16
+     */
+    public void checkWin(){
+        //tile 25
     }
     
     @Override

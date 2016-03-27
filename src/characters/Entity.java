@@ -224,7 +224,7 @@ abstract public class Entity extends ImageView {
                     world.enemies.getChildren().remove(this);
                 }
             } catch(ConcurrentModificationException e){
-                //This will happen sometimes. It doesn't affect gameplay.
+                //This will happen. It doesn't affect gameplay.
             }
             //if the entity was the player, reset the world
             if (this instanceof Player) {
