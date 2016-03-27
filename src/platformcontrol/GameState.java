@@ -16,6 +16,10 @@ import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 abstract public class GameState extends Pane{
     protected GameStateManager gsm;
@@ -53,9 +57,7 @@ abstract public class GameState extends Pane{
     public static final int PLAYER_SIZE = 80;
     public static final int ENEMY_SIZE = 50;
     public static final int MAP_TILE_SIZE = 50;
-    
-    //Enemies
-    private final int SNAIL_ENEMY = -1;
+    public static final List<Integer> WINNING_TILES = new ArrayList<>();
     
     /**
      * Constructor used in Menu/LoadScreen classes.
@@ -72,6 +74,8 @@ abstract public class GameState extends Pane{
         //player and enemy movement
         w = gsm.width;
         h = gsm.height - 0.25*GameState.PLAYER_SIZE;
+        WINNING_TILES.add(15);
+        WINNING_TILES.add(16);
         setHeight(h);
         setWidth(w);
         
@@ -116,6 +120,24 @@ abstract public class GameState extends Pane{
     public void reset(){
         gameThread.stop(); //Necessary to prevent lagging
         gsm.changeState(gsm.getCurrentState());
+    }
+    
+    /**
+     * Shows a win message and changes to next level.
+     */
+    public void win(){
+        GameState.gameThread.stop();
+        Text winMessage = new Text("Completed " + gsm.getCurrentState() + "!");
+        Font font = new Font("vernanda", 40);
+        winMessage.setFont(font);
+        winMessage.setFill(Color.RED);
+        winMessage.setTextAlignment(TextAlignment.CENTER);
+        double messageW = winMessage.getLayoutBounds().getWidth();
+        double messageH = winMessage.getLayoutBounds().getHeight();
+        winMessage.setX((w - messageW) / 2);
+        winMessage.setY((h - messageH) / 2);
+
+        getChildren().add(winMessage);
     }
     
     public void moveMap(String direction, int moveSpeed){

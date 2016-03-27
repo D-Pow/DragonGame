@@ -1,11 +1,17 @@
 package characters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import platformcontrol.GameState;
 
 public class Player extends Entity{
@@ -60,6 +66,7 @@ public class Player extends Entity{
     public void updateEntity(){
         if (alive){
             checkMapCollision(this);
+            checkWin();
             checkEnemyCollision();
             checkMapLocation();
             checkWin();
@@ -233,7 +240,18 @@ public class Player extends Entity{
      * Winning tiles are 15 and 16
      */
     public void checkWin(){
-        //tile 25
+        for (Node n : world.map.getChildren()) {
+            int tileIndex = world.map.getChildren().indexOf(n);
+            int tileNumber = world.mapTileNumbers.get(tileIndex);
+            //Check collision
+            ImageView tile = (ImageView) n;
+            if (checkObjectCollision((ImageView) this, tile)) {
+                //If player touches the winning tile
+                if (GameState.WINNING_TILES.contains(tileNumber)) {
+                    world.win();
+                }
+            }
+        }
     }
     
     @Override
