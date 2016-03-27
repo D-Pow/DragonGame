@@ -200,7 +200,7 @@ public class Player extends Entity{
         double centerAreaX = (world.getWidth() - centerAreaWidth)/2;
         
         if (direction.equals("Left") && !hitLeft &&     //Check if player should move
-                world.mapX <= 0){                      //Check if map is in bounds
+                world.mapX < 0){                      //Check if map is in bounds
             //If player is within the "move map" region defined above
             if (this.getX() >= centerAreaX && this.getX() <= centerAreaX + centerAreaWidth){
                 inCenter = true;
@@ -208,10 +208,10 @@ public class Player extends Entity{
         }
         
         //world.getWidth = width of the pane
-        //mapX = location of map tiles X-coordinate
-        //mapWidth = width of the map tiles
+        //mapX = location of the map tiles group's X-coordinate
+        //mapWidth = total width of the map tiles
         else if (direction.equals("Right") && !hitRight &&
-                world.mapX >= world.getWidth() - world.mapWidth){
+                world.mapX > world.getWidth() - world.mapWidth){
             if (this.getX() >= centerAreaX && this.getX() <= centerAreaX + centerAreaWidth){
                 inCenter = true;
             }
