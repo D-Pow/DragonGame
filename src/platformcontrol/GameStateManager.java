@@ -69,7 +69,7 @@ public final class GameStateManager{
     public void changeState(){
         StateType[] states = StateType.values();
         int i = 0;
-        while (!states[i].equals(currentState)){
+        while (states[i] != currentState){
             i++;
         }
         changeState(states[i+1]);

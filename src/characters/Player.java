@@ -237,7 +237,6 @@ public class Player extends Entity{
     
     /**
      * Checks if the player won the level.
-     * Winning tiles are 15 and 16
      */
     public void checkWin(){
         for (Node n : world.map.getChildren()) {
