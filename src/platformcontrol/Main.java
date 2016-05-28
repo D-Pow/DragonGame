@@ -18,6 +18,7 @@ public class Main extends Application{
         stage.setTitle("DragonGame");
         stage.setWidth(width);
         stage.setHeight(height);
+        stage.setResizable(false);
         //stage.setResizable(false);
         stage.getIcons().add(new Image("/characterimages/DragonIcon.png"));
         
