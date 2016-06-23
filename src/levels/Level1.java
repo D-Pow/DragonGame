@@ -1,7 +1,6 @@
 package levels;
 
 import characters.Player;
-import characters.SnailEnemy;
 import java.io.InputStream;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
@@ -29,9 +28,6 @@ public class Level1 extends GameState{
         player = new Player(this, playerStartX, playerStartY);
         entities.getChildren().add(player);//Player is added last so the image is
                                            //on top of all enemies
-        //Practice snail
-        enemies.getChildren().add(new SnailEnemy(playerStartX + GameState.PLAYER_SIZE*2,
-                playerStartY, this));
         
         try {
             InputStream in = this.getClass().getResourceAsStream("/levelresources/Level1.map");
