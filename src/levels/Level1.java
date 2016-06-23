@@ -19,15 +19,7 @@ public class Level1 extends GameState{
     
     @Override
     public void initObjects(){
-        //Enemies are initiated and located in initMap() below
-        
-        //Set start location
-        double playerStartX = GameState.MAP_TILE_SIZE*2;
-        double playerStartY = h - GameState.MAP_TILE_SIZE - GameState.PLAYER_SIZE;
-        //Making the player also adds the keyListener to the gameState
-        player = new Player(this, playerStartX, playerStartY);
-        entities.getChildren().add(player);//Player is added last so the image is
-                                           //on top of all enemies
+        //Player and enemies are initiated in initMap() below
         
         try {
             InputStream in = this.getClass().getResourceAsStream("/levelresources/Level1.map");
@@ -35,9 +27,6 @@ public class Level1 extends GameState{
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        
-        this.getChildren().addAll(entities, map);
-        entities.getChildren().add(enemies);
         
         //Set a background that is the window's size
         Image background = new Image("/levelresources/Level1background.png",

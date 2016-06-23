@@ -19,22 +19,12 @@ public class Level2 extends GameState{
     
     @Override
     public void initObjects(){
-        //Set start location
-        double playerStartX = GameState.PLAYER_SIZE*1.5;
-        double playerStartY = h - GameState.PLAYER_SIZE*3.5;
-        //Making the player also adds the keyListener to the gameState
-        player = new Player(this, playerStartX, playerStartY);
-        entities.getChildren().add(player);
-        
         try {
             InputStream in = this.getClass().getResourceAsStream("/levelresources/Level2.map");
             initMap(in);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        
-        this.getChildren().addAll(entities, map);
-        entities.getChildren().add(enemies);
         
         //Set a background that is the window's size
         Image background = new Image("/levelresources/Level1background.png",

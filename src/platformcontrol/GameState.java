@@ -10,8 +10,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Group;
@@ -19,10 +17,6 @@ import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 
 abstract public class GameState extends Pane{
     protected GameStateManager gsm;
@@ -62,6 +56,7 @@ abstract public class GameState extends Pane{
     public static final int MAP_TILE_SIZE = 50;
     public static final List<Integer> WINNING_TILES = new ArrayList<>();
     public static final List<Integer> ENEMY_TILES = new ArrayList<>();
+    public static final int PLAYER_TILE = 25;
     
     /**
      * Constructor used in Menu/LoadScreen classes.
@@ -80,7 +75,7 @@ abstract public class GameState extends Pane{
         h = gsm.height - 0.25*GameState.PLAYER_SIZE;
         WINNING_TILES.add(15);
         WINNING_TILES.add(16);
-        ENEMY_TILES.add(25);
+        ENEMY_TILES.add(26);
         setHeight(h);
         setWidth(w);
         
@@ -179,7 +174,9 @@ abstract public class GameState extends Pane{
     
     /**
      * Converts the mapTiles matrix of int values to a
-     * matrix of images.
+     * matrix of images. Enemy tiles are used to place
+     * enemies on the map, and then the tile in the .map
+     * file is read as a 0 tile (blank tile).
      */
     public final void loadMap(){
         mapTileNumbers = new ArrayList();
@@ -192,20 +189,28 @@ abstract public class GameState extends Pane{
             for (int col = 0; col < mapTiles[row].length; col++){
                 //Pull tile number from the map matrix
                 tile = mapTiles[row][col];
-                //If the tile number is in the array of enemy tilies, then
+                //If the tile number is in the array of enemy tiles, then
                 //it represents an enemy location. Send the level the
                 //corresponging location for the enemy.
                 if (ENEMY_TILES.contains(tile)){
                     switch(tile){
-                        case 25: //Snail Enemy
-                            double snailStartX = GameState.MAP_TILE_SIZE * col;
-                            double snailStartY = GameState.MAP_TILE_SIZE*row;
+                        case 26: //Snail Enemy
+                            double snailStartX = GameState.MAP_TILE_SIZE*col;
+                            double snailStartY = GameState.MAP_TILE_SIZE*(row-1);
                             SnailEnemy snail = new SnailEnemy(snailStartX, snailStartY, this);
                             enemies.getChildren().add(snail);
                             break;
                     }
                     //Make the map be filled with a blank tile in place of
                     //the enemy tile
+                    tile = 0;
+                }
+                
+                //If the tile is the player, set the start location
+                if (tile == PLAYER_TILE) {
+                    double playerStartX = GameState.MAP_TILE_SIZE * col;
+                    double playerStartY = GameState.MAP_TILE_SIZE * (row - 1);
+                    player = new Player(this, playerStartX, playerStartY);
                     tile = 0;
                 }
                 
@@ -240,6 +245,10 @@ abstract public class GameState extends Pane{
             }
         }
         blankTile = tileSet[0][0];
+        
+        //Add enemies and player last
+        entities.getChildren().addAll(enemies, player);
+        this.getChildren().addAll(entities, map);
     }//End loadMap()
     
     /**
