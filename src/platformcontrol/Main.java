@@ -19,7 +19,6 @@ public class Main extends Application{
         stage.setWidth(width);
         stage.setHeight(height);
         stage.setResizable(false);
-        //stage.setResizable(false);
         stage.getIcons().add(new Image("/characterimages/DragonIcon.png"));
         
         gsm = new GameStateManager(stage);

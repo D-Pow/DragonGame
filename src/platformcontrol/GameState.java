@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Group;
@@ -127,6 +129,7 @@ abstract public class GameState extends Pane{
      */
     public void win(){
         GameState.gameThread.stop();
+        /*
         Text winMessage = new Text("Completed " + gsm.getCurrentState() + "!");
         Font font = new Font("vernanda", 40);
         winMessage.setFont(font);
@@ -138,6 +141,8 @@ abstract public class GameState extends Pane{
         winMessage.setY((h - messageH) / 2);
 
         getChildren().add(winMessage);
+        */
+        gsm.changeState();
     }
     
     public void moveMap(String direction, int moveSpeed){

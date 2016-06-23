@@ -37,7 +37,6 @@ public final class GameStateManager{
         height = stage.getHeight();
         currentState = state;
         currentLevel = null;
-        System.gc();
         switch(currentState){
             case MENU:
                 currentLevel = new MenuScreen(this);
@@ -54,13 +53,13 @@ public final class GameStateManager{
             default:
                 //Do nothing
         }
-        System.gc(); //Erase data from previous game states (levels)
         Scene scene = new Scene(currentLevel,
                 width, height);
         stage.setScene(scene);
         currentLevel.setFocusTraversable(true);
         currentLevel.requestFocus();
         saveGame();
+        System.gc(); //Erase data from previous game states (levels)
     }
     
     /**

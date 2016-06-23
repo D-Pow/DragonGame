@@ -69,7 +69,6 @@ public class Player extends Entity{
             checkWin();
             checkEnemyCollision();
             checkMapLocation();
-            checkWin();
             move();
             jump();
             updateImage();
