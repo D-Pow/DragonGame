@@ -16,7 +16,13 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 abstract public class GameState extends Pane{
     protected GameStateManager gsm;
@@ -104,7 +110,7 @@ abstract public class GameState extends Pane{
     abstract public void initObjects();
     
     public final void initMap(InputStream in){
-        loadTiles();       //Put tiles from sheet into JavaFX matrix
+        loadTiles();       //Put tiles from sheet into Image matrix
         loadMapSheet(in); //Load the saved matrix of int values from resources
         loadMap();       //Make images for each tile and put them on screen
         mapWidth = mapTiles[0].length*MAP_TILE_SIZE;
@@ -127,8 +133,9 @@ abstract public class GameState extends Pane{
      */
     public void win(){
         GameState.gameThread.stop();
-        /*
-        Text winMessage = new Text("Completed " + gsm.getCurrentState() + "!");
+        
+        Text winMessage = new Text("Completed " + gsm.getCurrentState() + "!"
+                + "\nPress Shift to Continue");
         Font font = new Font("vernanda", 40);
         winMessage.setFont(font);
         winMessage.setFill(Color.RED);
@@ -140,13 +147,11 @@ abstract public class GameState extends Pane{
 
         getChildren().add(winMessage);
         
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException ex) {
-            
-        }
-        */
-        gsm.changeState();
+        this.addEventHandler(KeyEvent.KEY_PRESSED, (KeyEvent e)-> {
+            if (e.getCode() == KeyCode.SHIFT) {
+                gsm.changeState();
+            }
+        });
     }
     
     public void moveMap(String direction, int moveSpeed){
