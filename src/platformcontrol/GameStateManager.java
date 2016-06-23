@@ -64,7 +64,7 @@ public final class GameStateManager{
     }
     
     /**
-     * Changes the state to the next available state
+     * Changes the state to the next available state.
      */
     public void changeState(){
         StateType[] states = StateType.values();
@@ -75,26 +75,29 @@ public final class GameStateManager{
         changeState(states[i+1]);
     }
     
+    /**
+     * Saves the user's progress, overwriting the previous save
+     * file only if the user progressed in the game.
+     */
     private void saveGame(){
         File file = new File("./DragonSave.data");
         //If the file exists, compare if current level is higher than
         //the saved level. If it is, overwrite it.
-        if (file.exists() && 
-                currentState != StateType.MENU && currentState != StateType.LOAD){
-            try(BufferedWriter writer = new BufferedWriter(
-                    new FileWriter(file))){
-                int oldLevel = loadSave();
-                
-                String len = "LEVEL";
-                String currentLevelString = currentState.toString();
-                String levelNumber = currentLevelString.substring(len.length());
-                int newLevel = Integer.valueOf(levelNumber);
-                
-                if (newLevel > oldLevel){
+        if (file.exists() && currentState != StateType.MENU && 
+                currentState != StateType.LOAD && currentState != StateType.DONE){
+            int oldLevel = loadSave();
+            String len = "LEVEL";
+            String currentLevelString = currentState.toString();
+            String levelNumber = currentLevelString.substring(len.length());
+            int newLevel = Integer.valueOf(levelNumber);
+
+            if (newLevel > oldLevel) {
+                try (BufferedWriter writer = new BufferedWriter(
+                        new FileWriter(file))) {
                     writer.write(currentState.toString());
+                } catch (IOException ex) {
+                    ex.getCause();
                 }
-            } catch (IOException ex){
-                ex.getCause();
             }
         }
         else if (!file.exists()){
@@ -107,6 +110,13 @@ public final class GameStateManager{
         }
     }
     
+    /**
+     * Reads the save file to see the highest level the user has
+     * gotten to.
+     * 
+     * @return 
+     *      An int representing the highest level number the user has played
+     */
     public int loadSave(){
         String level = null;
         try(BufferedReader reader = new BufferedReader(new FileReader("./DragonSave.data"))){
