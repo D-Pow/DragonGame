@@ -37,7 +37,10 @@ public class Fireball extends Entity {
         Image startImage = fireballSprites.get(0)[animationCycler];
         setImage(startImage);
     }
-
+    
+    /**
+     * Fireball's movement.
+     */
     @Override
     public void updateEntity() {
         if (!hitObject) {
@@ -90,7 +93,11 @@ public class Fireball extends Entity {
             }
         }
     }
-
+    
+    /**
+     * Updates the sprite of the fireball. If the fireball is dissipated,
+     * then it is removed in the Player.updateFireballs() method.
+     */
     @Override
     public void updateImage() {
         //0 = Fireball is still active

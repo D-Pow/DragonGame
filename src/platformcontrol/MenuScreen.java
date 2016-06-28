@@ -27,6 +27,12 @@ public class MenuScreen extends GameState {
     private Image bg;
     private Background background;
     
+    /**
+     * Sets background and initializes options and key listener.
+     * 
+     * @param gsm 
+     *          The application's GameStateManager
+     */
     public MenuScreen(GameStateManager gsm){
         this.gsm = gsm;
         this.w = gsm.width;
@@ -42,7 +48,10 @@ public class MenuScreen extends GameState {
         initKeyListener();
         initObjects();
     }
-
+    
+    /**
+     * Puts the options on the screen.
+     */
     @Override
     public void initObjects() {
         List<String> options = new ArrayList<>();
@@ -65,6 +74,9 @@ public class MenuScreen extends GameState {
         selectionUpdate();
     }
     
+    /**
+     * Adds a key listener to change selection and activate it.
+     */
     public void initKeyListener() {
         this.addEventHandler(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
             if (e.getCode() == KeyCode.UP &&
@@ -86,6 +98,9 @@ public class MenuScreen extends GameState {
         });
     }
     
+    /**
+     * Changes the colors of the selected and no-longer selected options.
+     */
     private void selectionUpdate(){
         Text activeMessage = (Text) this.getChildren().get(currentSelection);
         activeMessage.setFill(Color.RED);
@@ -93,6 +108,9 @@ public class MenuScreen extends GameState {
         inactiveMessage.setFill(Color.BLUE);
     }
     
+    /**
+     * Activates the selected option.
+     */
     private void activate(){
         Text message = (Text) this.getChildren().get(currentSelection);
         switch (message.getText()){

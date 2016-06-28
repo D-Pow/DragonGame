@@ -17,6 +17,9 @@ public class Level2 extends GameState{
         super(gsm);
     }
     
+    /**
+     * Loads .map file and sets a background image.
+     */
     @Override
     public void initObjects(){
         try {

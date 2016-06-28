@@ -14,11 +14,11 @@ import levels.Level2;
 public final class GameStateManager{
     private StateType currentState;
     private GameState currentLevel;
-    public final Stage stage;
+    private final Stage stage;
     public double width;
     public double height;
     
-    public enum StateType {MENU, LOAD, PAUSE, LEVEL1, LEVEL2, DONE;}
+    public enum StateType {MENU, LOAD, LEVEL1, LEVEL2, DONE;}
     
     public GameStateManager(Stage stage){
         this.stage = stage;
@@ -28,9 +28,10 @@ public final class GameStateManager{
     
     /**
      * A factory method that changes the stage's
-     * scene to a new game state.
+     * scene to a new game state (level).
      * 
-     * @param state The game state the manager switches to.
+     * @param state
+     *          The game state the manager switches to.
      */
     public void changeState(StateType state){
         width = stage.getWidth();
@@ -64,6 +65,7 @@ public final class GameStateManager{
     
     /**
      * Changes the state to the next available state.
+     * Used only for changing to the next level while playing.
      */
     public void changeState(){
         StateType[] states = StateType.values();

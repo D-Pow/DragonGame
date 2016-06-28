@@ -5,6 +5,9 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 /**
+ * Simple platformer where you play as a Dragon.
+ * The arrow keys highlight the options, and enter
+ * selects the highlighted option.
  *
  * @author DP
  */

@@ -72,7 +72,7 @@ abstract public class GameState extends Pane{
     public static final int PLAYER_TILE = 25;
     
     /**
-     * Constructor used in Menu/LoadScreen classes.
+     * Constructor used in MenuScreen/LoadScreen classes.
      */
     public GameState(){
         threadLockMonitor = new Object();
@@ -80,7 +80,9 @@ abstract public class GameState extends Pane{
     
     /**
      * Constructor used in Level classes.
-     * @param gsm GameStateManager used for the game
+     * 
+     * @param gsm
+     *          GameStateManager used for the game
      */
     public GameState(GameStateManager gsm){
         this.gsm = gsm;
@@ -128,8 +130,18 @@ abstract public class GameState extends Pane{
         GameState.gameThread.start();
     }
     
+    /**
+     * Basically, only lets levels choose their background image.
+     */
     abstract public void initObjects();
     
+    /**
+     * Loads the map for the given level by calling
+     * all appropriate methods.
+     * 
+     * @param in 
+     *          InputStream for .map file
+     */
     public final void initMap(InputStream in){
         loadTiles();       //Put tiles from sheet into Image matrix
         loadMapSheet(in); //Load the saved matrix of int values from resources
@@ -137,6 +149,9 @@ abstract public class GameState extends Pane{
         mapWidth = mapTiles[0].length*MAP_TILE_SIZE;
     }
     
+    /**
+     * Updates every entity in the game.
+     */
     public void runGame(){
         player.updateEntity();
         for (Node n : enemies.getChildren()){
@@ -144,6 +159,10 @@ abstract public class GameState extends Pane{
         }
     }
     
+    /**
+     * Pauses and unpauses the game by halting and releasing
+     * the game thread lock monitor.
+     */
     public void pauseGame() {
         if (running) {
             togglePauseMenu();
@@ -157,6 +176,9 @@ abstract public class GameState extends Pane{
         }
     }
     
+    /**
+     * Displays and hides the pause menu.
+     */
     private void togglePauseMenu() {
         FadeTransition fade = new FadeTransition(Duration.millis(500), this);
         fade.setFromValue(0.0);
@@ -189,11 +211,17 @@ abstract public class GameState extends Pane{
         }
     }
     
+    /**
+     * Resets the current level.
+     */
     public void reset(){
         gameThread.stop(); //Necessary to prevent lagging
         gsm.changeState(gsm.getCurrentState());
     }
     
+    /**
+     * Returns the user back to the main menu.
+     */
     public void quit() {
         gsm.changeState(StateType.MENU);
     }
@@ -224,10 +252,20 @@ abstract public class GameState extends Pane{
         });
     }
     
+    /**
+     * Moves the image matrix (map) in the opposite direction
+     * that the player is moving. Also, moves the enemies along with
+     * the map so that the whole world moves for the player.
+     * 
+     * @param direction
+     *          "Left" or "Right" as specified by Player class
+     * @param moveSpeed 
+     *          How fast the map should move as specified by Player class
+     */
     public void moveMap(String direction, int moveSpeed){
         switch(direction){
             case "Left":
-                //Do nothing; moveSpeed is already positive
+                //Do nothing; moveSpeed from Player is already positive
                 break;
             case "Right":
                 moveSpeed *= -1;
@@ -249,9 +287,9 @@ abstract public class GameState extends Pane{
     
     /**
      * Converts the mapTiles matrix of int values to a
-     * matrix of images. Enemy tiles are used to place
-     * enemies on the map, and then the tile in the .map
-     * file is read as a 0 tile (blank tile).
+     * matrix of images (map). Player and enemy tiles are used to place
+     * respective entities on the map, and then a blank tile is put on
+     * the map in their location.
      */
     public final void loadMap(){
         mapTileNumbers = new ArrayList();
@@ -323,11 +361,11 @@ abstract public class GameState extends Pane{
         
         //Add enemies and player last
         entities.getChildren().addAll(enemies, player);
-        this.getChildren().addAll(entities, map);
+        this.getChildren().addAll(map, entities);
     }//End loadMap()
     
     /**
-     * Loads the .mapTiles file associated with the platformer.
+     * Loads the .map file (holding int matrix) associated with the given level.
      * Map file must be loaded as input stream.
      * 
      * @param in The input stream of the .map file describing
@@ -361,7 +399,8 @@ abstract public class GameState extends Pane{
     }
     
     /**
-     * Initializes the set of tile images
+     * Initializes the set of tile images by making the matrix index
+     * correspond to a given tile image.
      */
     public final void loadTiles(){
         try{

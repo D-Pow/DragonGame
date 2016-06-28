@@ -1,6 +1,5 @@
 package levels;
 
-import characters.Player;
 import java.io.InputStream;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
@@ -17,6 +16,9 @@ public class Level1 extends GameState{
         super(gsm);
     }
     
+    /**
+     * Loads .map file and sets a background image.
+     */
     @Override
     public void initObjects(){
         //Player and enemies are initiated in initMap() below

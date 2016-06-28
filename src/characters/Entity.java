@@ -89,7 +89,7 @@ abstract public class Entity extends ImageView {
     }
 
     /**
-     * Updates the character's properties.
+     * Updates the character's properties in order to run the game.
      */
     public void updateEntity() {
         if (alive) {
@@ -103,7 +103,7 @@ abstract public class Entity extends ImageView {
     }
 
     /**
-     * Moves the character entity left or right. This is designed mostly for
+     * Moves the character entity left or right. This is designed for
      * enemies, not the player or fireballs.
      */
     public void move() {
@@ -142,6 +142,9 @@ abstract public class Entity extends ImageView {
         jump();
     }
     
+    /**
+     * Allows the entity to jump if they so choose.
+     */
     public void jump(){
         //Try to jump
         if (jumping && jumpTime < jumpHeight){
@@ -163,7 +166,11 @@ abstract public class Entity extends ImageView {
             fall();
         }
     }
-
+    
+    /**
+     * Causes the entity to fall (move towards the ground) after
+     * jumping or walking off the edge.
+     */
     public void fall() {
         if (onGround) {
             //Allows entity to jump again
@@ -187,7 +194,10 @@ abstract public class Entity extends ImageView {
             }
         }
     }
-
+    
+    /**
+     * Checks to see if the entity should be dead or alive.
+     */
     protected void checkDeath() {
         //alive added to prevent deathSprite overwrite
         //If health is exhausted
@@ -200,6 +210,10 @@ abstract public class Entity extends ImageView {
         }
     }
     
+    /**
+     * Displays a simple death-animation and then removes the
+     * entity from the world (GameState).
+     */
     public void die() {
         //Change the sprite to represent death
         timeToUpdateCycler++;
@@ -234,7 +248,8 @@ abstract public class Entity extends ImageView {
     }
 
     /**
-     * Updates the current sprite of the entity.
+     * Updates the current sprite of the entity based on the
+     * current action being performed.
      */
     public void updateImage() {
         timeToUpdateCycler++;
@@ -264,7 +279,19 @@ abstract public class Entity extends ImageView {
             timeToUpdateCycler = 0;
         }
     }
-
+    
+    /**
+     * Checks to see if the first image collides with the second.
+     * Used for checking if an entity collides with the map,
+     * another entity, fireball, or a winning-door tile (Player only).
+     * 
+     * @param first
+     *          First image (entity or map tile)
+     * @param second
+     *          Second image (entity or map tile)
+     * @return 
+     *          True if the images collide, else false
+     */
     public boolean checkObjectCollision(ImageView first, ImageView second) {
         //If the two images collide
         if ((first.getX() <= second.getX() + second.getFitWidth()
@@ -277,9 +304,13 @@ abstract public class Entity extends ImageView {
     }
 
     /**
-     * Checks collision of the entity passed with the map.
+     * Checks if the entity passed collides with the map, then calls
+     * updateCollisions. This method is useful because it checks to see which
+     * map tiles the entity collides with before deciding which side(s) with
+     * which the entity collided.
      *
-     * @param e Entity whose collision is being checked.
+     * @param e
+     *          Entity whose collision is being checked
      */
     public void checkMapCollision(Entity e) {
         //For each map tile
@@ -300,13 +331,17 @@ abstract public class Entity extends ImageView {
     }
 
     /**
-     * This method updates the corner collision markers for the first image
-     * (character) according to if it collides with a second image (map). This
-     * is to be called in the same loop as the checkCollision method, but after
-     * it has been called.
+     * This method updates which corners of the first image (entity) experienced
+     * a collision according to if it collides with a second image (map tile).
+     * This monitors which sides have experienced a collision to decide if the
+     * entity should be prevented from moving.
+     * This is to be called after the checkCollision method is finished running in
+     * order to reduce the computations done per updateEntity() method call.
      *
-     * @param entity Entity whose collisions are being updated
-     * @param tiles List of tiles to include in update
+     * @param entity
+     *          Entity whose collisions are being updated
+     * @param tiles
+     *          List of tiles the entity collided with
      */
     public void updateCollisions(Entity entity, List<ImageView> tiles) {
         ImageView first = (ImageView) entity;
@@ -335,7 +370,7 @@ abstract public class Entity extends ImageView {
         double expectedCollisionDistance = Math.sqrt(leg + leg);
 
         //Reset if the corners have collided
-        //onGround is needed here in order to make player fall after
+        //onGround needs to be included in order to make player fall after
         //walking off a ledge
         entity.topLeft = entity.topRight = entity.bottomLeft = entity.bottomRight
                 = entity.midLeft = entity.midRight = entity.onGround

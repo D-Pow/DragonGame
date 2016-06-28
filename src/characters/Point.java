@@ -9,6 +9,16 @@ public class Point {
         this.y = y;
     }
     
+    /**
+     * Gets the distance between two points.
+     * 
+     * @param first
+     *          First point
+     * @param second
+     *          Second point
+     * @return 
+     *          Double value of the distance between points
+     */
     public static double getDistance(Point first, Point second){
         double dx = first.x - second.x;
         double dy = first.y - second.y;

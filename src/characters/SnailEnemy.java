@@ -10,6 +10,16 @@ import platformcontrol.GameState;
 public class SnailEnemy extends Entity{
     boolean hitObject;
     
+    /**
+     * Sets health and damage for snail enemies.
+     * 
+     * @param x
+     *          Starting X-coordinate
+     * @param y
+     *          Starting Y-coordinate
+     * @param world 
+     *          The current GameState
+     */
     public SnailEnemy(double x, double y, GameState world) {
         super((Image) null, world);
         sprites = (new SpriteManager()).getSnailSprites();

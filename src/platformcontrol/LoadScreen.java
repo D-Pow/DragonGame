@@ -23,6 +23,12 @@ public class LoadScreen extends GameState {
     private Image bg;
     private Background background;
     
+    /**
+     * Sets background and initializes options and key listener.
+     * 
+     * @param gsm 
+     *          The application's GameStateManager
+     */
     public LoadScreen(GameStateManager gsm){
         this.gsm = gsm;
         this.w = gsm.width;
@@ -39,6 +45,9 @@ public class LoadScreen extends GameState {
         initObjects();
     }
 
+    /**
+     * Puts the options on the screen.
+     */
     @Override
     public void initObjects() {
         int levelNumber = gsm.loadSave();
@@ -65,6 +74,9 @@ public class LoadScreen extends GameState {
         selectionUpdate();
     }//End initObjects()
     
+    /**
+     * Adds a key listener to change selection and activate it.
+     */
     public void initKeyListener() {
         this.addEventHandler(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
             if (e.getCode() == KeyCode.UP &&
@@ -86,6 +98,9 @@ public class LoadScreen extends GameState {
         });
     }
     
+    /**
+     * Changes the colors of the selected and no-longer selected options.
+     */
     private void selectionUpdate(){
         Text activeMessage = (Text) this.getChildren().get(currentSelection);
         activeMessage.setFill(Color.RED);
@@ -93,6 +108,9 @@ public class LoadScreen extends GameState {
         inactiveMessage.setFill(Color.BLUE);
     }
     
+    /**
+     * Activates the selected option.
+     */
     private void activate(){
         Text message = (Text) this.getChildren().get(currentSelection);
         String text = message.getText();

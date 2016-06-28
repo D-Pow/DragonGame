@@ -19,8 +19,7 @@ public class SpriteManager {
     public static final int FIRING = 5;
     public static final int SCRATCHING = 6;
     
-    public SpriteManager(){
-    }
+    public SpriteManager(){}
     
     /**
      * Initialize the player's sprites. Player sprites are split
@@ -28,8 +27,9 @@ public class SpriteManager {
      */
     private void initPlayerSprites(String s){
         ArrayList<Image[]> playerSprites = new ArrayList<>();
-        int spriteSize = 30;
-        //Make a list of how many sprite frames per type of movement
+        int spriteSize = 30; //Size of each sprite in the .png files
+        //Make a list of how many sprite frames per type of movement.
+        //Each type of movement corresponds to a different index in the array.
         numberOfSpriteFrames = new int[]{2, 8, 1, 2, 4, 2, 5};
         //Load the image from resources and turn into buffered image
         //BufferedImage is needed for subImage method.
@@ -73,8 +73,10 @@ public class SpriteManager {
                     currentMovementSprites[j] = SwingFXUtils.toFXImage(sprite, null);
                 }
             }
+            //Add the current row's sprites to the playerSprites list
             playerSprites.add(currentMovementSprites);
         }
+        //Once all the rows are completed, return the list
         if (s.equals("Right")){
             playerSpritesRight = new ArrayList(playerSprites);
         }
@@ -83,16 +85,34 @@ public class SpriteManager {
         }
     }
     
+    /**
+     * Gets the matrix of the Player's right-sprites.
+     * 
+     * @return 
+     *          Matrix of sprite images
+     */
     public ArrayList<Image[]> getPlayerSpritesRight(){
         initPlayerSprites("Right");
         return playerSpritesRight;
     }
     
+    /**
+     * Gets the matrix of the Player's left-sprites.
+     * 
+     * @return 
+     *          Matrix of sprite images
+     */
     public ArrayList<Image[]> getPlayerSpritesLeft(){
         initPlayerSprites("Left");
         return playerSpritesLeft;
     }
     
+    /**
+     * Gets the death sprites from file and loads them into an array.
+     * 
+     * @return 
+     *          Array of death sprites
+     */
     public Image[] getDeathSprites(){
         Image origDeathImage = new Image("characterimages/DeathSprites.png");
         int size = 30;
@@ -109,6 +129,12 @@ public class SpriteManager {
         return deathSprites;
     }
     
+    /**
+     * Gets the fireball sprites and puts them into a matrix.
+     * 
+     * @return 
+     *          Matrix of fireball sprites
+     */
     public ArrayList<Image[]> getFireballSprites(){
         int fireballSpriteSize = 16;
         ArrayList<Image[]> fireballSpriteImages = new ArrayList<>();
@@ -136,6 +162,12 @@ public class SpriteManager {
         return fireballSpriteImages;
     }
     
+    /**
+     * Gets the sprites for the snail enemy.
+     * 
+     * @return 
+     *          Matrix of snail sprites
+     */
     public ArrayList<Image[]> getSnailSprites(){
         ArrayList<Image[]> snailSprites = new ArrayList<>();
         int snailSpriteH = 20;

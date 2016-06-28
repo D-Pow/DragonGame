@@ -23,6 +23,16 @@ public class Player extends Entity{
     int fireEnergy;
     int fireCost;
     
+    /**
+     * Sets initial values for speed, health, damage, etc.
+     * 
+     * @param world
+     *          The current GameState
+     * @param startX
+     *          Starting X-coordinate
+     * @param startY 
+     *          Starting Y-coordinate
+     */
     public Player(GameState world, double startX, double startY){
         super(null, world);
         sm = new SpriteManager();
@@ -36,7 +46,7 @@ public class Player extends Entity{
         setY(startY);
         setFitWidth(size);
         setFitHeight(size);
-        origWidth = size;
+        origWidth = size; //Used to revert to normal after done scratching
         direction = "Right";
         moving = false; //To counter the default moving = true from Entity
         moveSpeed = 2;
@@ -75,7 +85,12 @@ public class Player extends Entity{
         }
     }
     
-    
+    /**
+     * The player has more options for moving than normal entities
+     * do, so the Entity.move() method is overridden here.
+     * This also moves the map instead of the Player if the Player
+     * is in the center of the screen.
+     */
     @Override
     public void move(){
         if (moving && !attacking){
@@ -129,6 +144,9 @@ public class Player extends Entity{
         }
     }
     
+    /**
+     * Scratch attack.
+     */
     public void scratch(){
         if (!justScratched){
             attacking = true;
@@ -138,6 +156,9 @@ public class Player extends Entity{
         }
     }
     
+    /**
+     * Fireball attack; shoots new fireball.
+     */
     public void fire(){
         if (!justFired && fireEnergy > fireCost){
             attacking = true;
@@ -155,6 +176,10 @@ public class Player extends Entity{
         }
     }
     
+    /**
+     * Moves fireballs and deletes them if the fireballs have dissipated
+     * (dissipated = hit an object and run through the dissipation sprites).
+     */
     public void updateFireballs(){
         Iterator<Node> iterator = world.entities.getChildren().iterator();
         while (iterator.hasNext()){
@@ -170,6 +195,9 @@ public class Player extends Entity{
         }
     }
     
+    /**
+     * Checks if the Player has collided with any enemies.
+     */
     public void checkEnemyCollision(){
         if (!attacking && !flinching) {
             for (Node n : world.enemies.getChildren()) {
@@ -198,14 +226,14 @@ public class Player extends Entity{
     }
     
     /**
-     * Checks if the player is in the center of the map.
+     * Checks if the player is in the center of the map and updates inCenter.
      * If it is, then move the map rather than the player.
      */
     public void checkMapLocation(){
         double centerAreaWidth = world.getWidth()/6;
         double centerAreaX = (world.getWidth() - centerAreaWidth)/2;
         
-        if (direction.equals("Left") && !hitLeft &&     //Check if player should move
+        if (direction.equals("Left") && !hitLeft &&   //Check if player should move
                 world.mapX < 0){                      //Check if map is in bounds
             //If player is within the "move map" region defined above
             if (this.getX() >= centerAreaX && this.getX() <= centerAreaX + centerAreaWidth){
@@ -214,7 +242,7 @@ public class Player extends Entity{
         }
         
         //world.getWidth = width of the pane
-        //mapX = location of the map tiles group's X-coordinate
+        //mapX = location of the entire map-tiles group's X-coordinate (very left)
         //mapWidth = total width of the map tiles
         else if (direction.equals("Right") && !hitRight &&
                 world.mapX > world.getWidth() - world.mapWidth){
@@ -230,7 +258,7 @@ public class Player extends Entity{
     }
     
     /**
-     * Checks if the player won the level.
+     * Checks if the player won the level, and initializes GameState.win() if true.
      */
     public void checkWin(){
         for (Node n : world.map.getChildren()) {
@@ -247,6 +275,11 @@ public class Player extends Entity{
         }
     }
     
+    /**
+     * Player includes actions other than moving and flinching,
+     * so Entity.updateImage() is overridden here to include firing,
+     * scratching, and gliding.
+     */
     @Override
     public void updateImage(){
         timeToUpdateCycler++;
@@ -314,6 +347,10 @@ public class Player extends Entity{
         }
     }
     
+    /**
+     * Add all the controls for the game, including movement, attacks,
+     * and pausing the game.
+     */
     private void initWorldKeyListener(){
         world.addEventHandler(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
             if (e.getCode() == KeyCode.A){
