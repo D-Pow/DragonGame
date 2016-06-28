@@ -46,7 +46,7 @@ public class SpriteManager {
         //on a different row)
         for (int row = 0; row < numberOfSpriteFrames.length; row++){
             Image[] currentMovementSprites;
-            //The final row is extra long, so it doesn't fit perfectly
+            //The final row contains extra long images, so it doesn't fit perfectly
             //in spriteSize like the first 5 rows
             if (row != 6){
                 //Set how large the BufferedImage array will be for the specific
