@@ -14,11 +14,11 @@ import levels.Level2;
 public final class GameStateManager{
     private StateType currentState;
     private GameState currentLevel;
-    private final Stage stage;
+    public final Stage stage;
     public double width;
     public double height;
     
-    public enum StateType {MENU, LOAD, LEVEL1, LEVEL2, DONE;}
+    public enum StateType {MENU, LOAD, PAUSE, LEVEL1, LEVEL2, DONE;}
     
     public GameStateManager(Stage stage){
         this.stage = stage;

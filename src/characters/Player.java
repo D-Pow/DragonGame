@@ -1,17 +1,12 @@
 package characters;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import platformcontrol.GameState;
 
 public class Player extends Entity{
@@ -348,6 +343,17 @@ public class Player extends Entity{
             if (e.getCode() == KeyCode.K){
                 if(!attacking){
                     fire();
+                }
+            }
+            //Pause menu
+            if (e.getCode() == KeyCode.ENTER) {
+                world.pauseGame();
+            }
+            //Quit
+            if (e.getCode() == KeyCode.BACK_SPACE) {
+                //Only quit if game is paused
+                if (!world.running) {
+                    world.quit();
                 }
             }
         });

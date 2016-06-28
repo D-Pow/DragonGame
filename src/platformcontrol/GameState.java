@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Group;
@@ -20,15 +21,17 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
+import platformcontrol.GameStateManager.StateType;
 
 abstract public class GameState extends Pane{
-    protected GameStateManager gsm;
+    public GameStateManager gsm;
     protected double w;//Used only for initObjects
     protected double h;//Used only for initObjects
-    public static Thread gameThread;
     
     //GameMap and TileSet
     //int[row][col] i.e. int[y][x]
@@ -45,8 +48,12 @@ abstract public class GameState extends Pane{
     protected int numTileColumns;
     public int numDecorationTiles; //Number of tiles to not include in entity collision
     
+    //Thread the game runs on
+    public static Thread gameThread;
     //Used to check if game is paused
-    protected boolean running;
+    public boolean running;
+    //Synchronized thread lock monitor for pausing game
+    public final Object threadLockMonitor; //
     
     //Characters
     public Player player;
@@ -67,7 +74,9 @@ abstract public class GameState extends Pane{
     /**
      * Constructor used in Menu/LoadScreen classes.
      */
-    public GameState(){}
+    public GameState(){
+        threadLockMonitor = new Object();
+    }
     
     /**
      * Constructor used in Level classes.
@@ -78,24 +87,36 @@ abstract public class GameState extends Pane{
         //w and h are only necessary for initObjects(), not for
         //player and enemy movement
         w = gsm.width;
-        h = gsm.height - 0.25*GameState.PLAYER_SIZE;
+        h = gsm.height - 0.25*GameState.PLAYER_SIZE; //positioning the map inside
+                                                     //inside the stage perfectly
         WINNING_TILES.add(15);
         WINNING_TILES.add(16);
         ENEMY_TILES.add(26);
+        //Synchronized thread lock monitor for pausing game
+        threadLockMonitor = new Object();
         setHeight(h);
         setWidth(w);
         
         initObjects();
         
         running = true;
-        GameState.gameThread = new Thread(new Runnable(){
+        GameState.gameThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true){
-                    if (running){
+                while (true) {
+                    synchronized (threadLockMonitor) {
+                        if (!running) {
+                            try {
+                                threadLockMonitor.wait();
+                            } catch (InterruptedException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                        //if running
                         try {
                             Platform.runLater(() -> runGame());
                             TimeUnit.MILLISECONDS.sleep(10);
+                            threadLockMonitor.notify();
                         } catch (InterruptedException ex) {
                             ex.printStackTrace();
                         }
@@ -123,9 +144,58 @@ abstract public class GameState extends Pane{
         }
     }
     
+    public void pauseGame() {
+        if (running) {
+            togglePauseMenu();
+            running = false;
+        } else {
+            synchronized (threadLockMonitor) {
+                togglePauseMenu();
+                running = true;
+                threadLockMonitor.notifyAll();
+            }
+        }
+    }
+    
+    private void togglePauseMenu() {
+        FadeTransition fade = new FadeTransition(Duration.millis(500), this);
+        fade.setFromValue(0.0);
+        fade.setToValue(1.0);
+        fade.play();
+        
+        if (running) {
+            Rectangle screenCover = new Rectangle(gsm.width, gsm.height);
+            screenCover.setFill(new Color(0,0,0,0.5));
+            this.getChildren().add(screenCover);
+
+            String[] options = new String[]{
+                                "Backspace: Main Menu",
+                                "Enter: Resume"};
+            for (int i = 0; i < options.length; i++) {
+                Text message = new Text(options[i]);
+                Font font = new Font("vernanda", 40);
+                message.setFont(font);
+                message.setFill(Color.RED);
+                message.setTextAlignment(TextAlignment.CENTER);
+                double messageW = message.getLayoutBounds().getWidth();
+                double messageH = message.getLayoutBounds().getHeight();
+                message.setX((w - messageW) / 2);
+                message.setY(0.6*h - (messageH * 2 + messageH * i));
+                this.getChildren().add(message);
+            }
+        } else {
+            int size = this.getChildren().size();
+            this.getChildren().remove(size-3, size);
+        }
+    }
+    
     public void reset(){
         gameThread.stop(); //Necessary to prevent lagging
         gsm.changeState(gsm.getCurrentState());
+    }
+    
+    public void quit() {
+        gsm.changeState(StateType.MENU);
     }
     
     /**
