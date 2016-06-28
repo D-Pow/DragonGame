@@ -353,35 +353,41 @@ public class Player extends Entity{
      */
     private void initWorldKeyListener(){
         world.addEventHandler(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
+            //Move left
             if (e.getCode() == KeyCode.A){
                 if (!attacking){
                     direction = "Left";
                     moving = true;
                 }
             }
+            //Move right
             else if (e.getCode() == KeyCode.D){
                 if (!attacking){
                     direction = "Right";
                     moving = true;
                 }
             }
+            
+            //Jump (or glide if jumpTime == jumpHeight)
             if (e.getCode() == KeyCode.SPACE){
                 jumping = true;
-            }
-            if (e.getCode() == KeyCode.W){
                 gliding = true;
             }
+            
+            //Scratch
             if (e.getCode() == KeyCode.J){
                 if(!attacking){
                     scratch();
                     justScratched = true;
                 }
             }
+            //Fire
             if (e.getCode() == KeyCode.K){
                 if(!attacking){
                     fire();
                 }
             }
+            
             //Pause menu
             if (e.getCode() == KeyCode.ENTER) {
                 world.pauseGame();
@@ -396,14 +402,14 @@ public class Player extends Entity{
         });
         
         world.addEventHandler(KeyEvent.KEY_RELEASED, (KeyEvent e) -> {
+            //Stop jumping
             if (e.getCode() == KeyCode.SPACE){
                 jumping = false;
+                gliding = false;
             }
+            //Stop moving
             if (e.getCode() == KeyCode.A || e.getCode() == KeyCode.D){
                 moving = false;
-            }
-            if (e.getCode() == KeyCode.W){
-                gliding = false;
             }
         });
     }
