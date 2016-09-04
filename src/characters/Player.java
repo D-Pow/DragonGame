@@ -58,6 +58,7 @@ public class Player extends Entity{
         fireEnergy = fireEnergyAtStart;
         fireCost = 10;
         initWorldKeyListener();
+        SoundEffect.SILENCE.play(); //Play a blank sound to load all sounds into cache
     }
     
     /**
@@ -153,6 +154,10 @@ public class Player extends Entity{
             scratching = true;
             currentAction = SCRATCHING;
             animationCycler = 0;
+            if (animationCycler == 0) {
+                //Only play scratch at the beginning of the attack
+                SoundEffect.SCRATCH.play();
+            }
         }
     }
     
@@ -173,6 +178,7 @@ public class Player extends Entity{
             animationCycler = 0;
             Fireball fireball = new Fireball(direction, fireSpeed, world);
             world.entities.getChildren().add(fireball);
+            SoundEffect.FIREBALL.play();
         }
     }
     
@@ -283,7 +289,9 @@ public class Player extends Entity{
     @Override
     public void updateImage(){
         timeToUpdateCycler++;
-        if (timeToUpdateCycler == UPDATE_TIME){
+        if (timeToUpdateCycler == UPDATE_TIME ||
+                //Make scratching animation play faster for aesthetic purposes
+                (scratching && timeToUpdateCycler == UPDATE_TIME*0.6)){
             switch (direction){
                 case "Right":
                     playerSprites = new ArrayList(rightSprites);
@@ -372,6 +380,7 @@ public class Player extends Entity{
             if (e.getCode() == KeyCode.SPACE){
                 jumping = true;
                 gliding = true;
+                justJumped = true;
             }
             
             //Scratch
@@ -406,6 +415,7 @@ public class Player extends Entity{
             if (e.getCode() == KeyCode.SPACE){
                 jumping = false;
                 gliding = false;
+                justJumped = false;
             }
             //Stop moving
             if (e.getCode() == KeyCode.A || e.getCode() == KeyCode.D){

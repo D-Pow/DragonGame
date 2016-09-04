@@ -151,6 +151,10 @@ abstract public class Entity extends ImageView {
             //jumpTime is how long you can jump before falling
             //Once jumpTime = jumpHeight, you start falling
             //regardless of if you are trying to jump (jumping = true)
+            if (jumpTime == 0) {
+                //Only play the sound effect at the beginning of a jump
+                SoundEffect.JUMP.play();
+            }
             jumpTime++;
             onGround = bottomLeft = bottomRight = bottomMiddle = false;
             setY(getY() - jumpSpeed);
@@ -173,12 +177,13 @@ abstract public class Entity extends ImageView {
      */
     public void fall() {
         if (onGround) {
-            //Allows entity to jump again
-            jumpTime = 0;
-            if (!moving) {
-                if (!attacking) {
-                    currentAction = IDLE;
-                }
+            if (!justJumped) {
+                //Allows entity to jump again
+                //only if the jump-button is released
+                jumpTime = 0;
+            }
+            if (!moving && !attacking) {
+                currentAction = IDLE;
             }
         } else if (!onGround) {
             if (gliding) {
