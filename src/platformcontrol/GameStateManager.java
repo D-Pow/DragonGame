@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import levels.Level1;
 import levels.Level2;
+import levels.MusicPlayer;
 
 public final class GameStateManager{
     private StateType currentState;
@@ -38,6 +39,8 @@ public final class GameStateManager{
         height = stage.getHeight();
         currentState = state;
         currentLevel = null;
+        //Cancel all music
+        MusicPlayer.stopAllSongs();
         switch(currentState){
             case MENU:
                 currentLevel = new MenuScreen(this);

@@ -1,6 +1,5 @@
 package levels;
 
-import characters.Player;
 import java.io.InputStream;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
@@ -37,6 +36,9 @@ public class Level2 extends GameState{
                 BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
         Background bg = new Background(backgroundImage);
         this.setBackground(bg);
+        
+        //Play background music
+        MusicPlayer.outdoorSong.playSong();
     }
     
 }

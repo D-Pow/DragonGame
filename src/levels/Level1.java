@@ -38,6 +38,9 @@ public class Level1 extends GameState{
                 BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
         Background bg = new Background(backgroundImage);
         this.setBackground(bg);
+        
+        //Play background music
+        MusicPlayer.outdoorSong.playSong();
     }
     
 }

@@ -1,7 +1,6 @@
 package characters;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -22,8 +21,17 @@ public enum SoundEffect {
     SILENCE("silence.aiff");
     
     private Clip clip;
-
-    SoundEffect(String fileName) {
+    
+    /**
+     * Constructor for the specified sound effects.
+     * All sound effects are in the same path location,
+     * so the only difference needed to get the resource
+     * is the name of the file.
+     * 
+     * @param fileName 
+     *          Name of the sound file
+     */
+    private SoundEffect(String fileName) {
         URL url = this.getClass().getResource("/SFX/" + fileName);
         AudioInputStream ais = null;
         try {
@@ -44,6 +52,9 @@ public enum SoundEffect {
         }
     }
     
+    /**
+     * Plays the given audio clip.
+     */
     public void play() {
         if (clip.isRunning()) {
             clip.stop(); //Cancel the sound if it's playing already
