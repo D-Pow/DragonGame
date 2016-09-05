@@ -1,9 +1,18 @@
 package platformcontrol;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -11,7 +20,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -118,20 +128,49 @@ public class MenuScreen extends GameState {
                 gsm.changeState(GameStateManager.StateType.LOAD);
                 break;
             case "Help":
-                StackPane root = new StackPane();
-                root.setBackground(background);
-                root.getChildren().add(new ImageView("/levelresources/Controls.png"));
-                Scene scene = new Scene(root, w*0.75, h*0.75);
-                Stage stage = new Stage();
-                stage.setScene(scene);
-                stage.show();
-                stage.setOnCloseRequest(null);
+                openHelpDialog();
                 break;
             case "Exit":
                 System.exit(0);
                 break;
             default:
                 //Do nothing
+        }
+    }
+    
+    private void openHelpDialog() {
+        BorderPane root = new BorderPane();
+        root.setBackground(background);
+        root.setCenter(new ImageView("/levelresources/Controls.png"));
+
+        //Add credits button
+        Button creditsButton = new Button("Credits");
+        creditsButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                showCredits();
+            }
+        });
+        HBox hbox = new HBox();
+        hbox.getChildren().add(creditsButton);
+        hbox.setAlignment(Pos.BOTTOM_RIGHT);
+        root.setBottom(hbox);
+
+        Scene scene = new Scene(root, w * 0.75, h * 0.75);
+        Stage stage = new Stage();
+        stage.getIcons().add(new Image("/characterimages/DragonIcon.png"));
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.show();
+        stage.setOnCloseRequest(null);
+    }
+    
+    private void showCredits() {
+        try {
+            URL credits = this.getClass().getResource("/Credits for DragonGame.txt");
+            Desktop.getDesktop().open(new File(credits.toURI()));
+        } catch (IOException | URISyntaxException ex) {
+            ex.printStackTrace();
         }
     }
 }

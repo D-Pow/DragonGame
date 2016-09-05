@@ -95,6 +95,10 @@ public class LoadScreen extends GameState {
             if (e.getCode() == KeyCode.ENTER){
                 activate();
             }
+            
+            if (e.getCode() == KeyCode.BACK_SPACE) {
+                gsm.changeState(StateType.MENU);
+            }
         });
     }
     
