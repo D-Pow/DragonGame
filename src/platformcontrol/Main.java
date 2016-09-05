@@ -18,11 +18,11 @@ public class Main extends Application{
 
     @Override
     public void start(Stage stage) throws Exception {
-        stage.setTitle("DragonGame");
+        stage.setTitle("Dragon Game by D-Pow");
         stage.setWidth(width);
         stage.setHeight(height);
         stage.setResizable(false);
-        stage.getIcons().add(new Image("/characterimages/DragonIcon.png"));
+        stage.getIcons().add(new Image("/levelresources/DragonIcon.png"));
         
         gsm = new GameStateManager(stage);
         

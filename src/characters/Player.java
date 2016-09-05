@@ -19,9 +19,11 @@ public class Player extends Entity{
     public boolean inCenter; //Decide whether or not to move map
     int scratchDamage;
     int fireDamage;
-    int fireEnergyAtStart;
-    int fireEnergy;
-    int fireCost;
+    int maxFireEnergy; //Maximum fire energy possible
+    int fireEnergy; //How much energy the dragon has to use for shooting fireballs
+    int fireCost; //how much each fireball costs
+    int fireEnergyDelayCounter; //cycler; when this equals fireEnergyDelay, fireEnergy++
+    int fireEnergyDelay; //determines length of time for the fire regeneration delay
     
     /**
      * Sets initial values for speed, health, damage, etc.
@@ -51,12 +53,12 @@ public class Player extends Entity{
         moving = false; //To counter the default moving = true from Entity
         moveSpeed = 2;
         fireSpeed = 4;
-        health = 500;
-        scratchDamage = 100;
-        fireDamage = 50;
-        fireEnergyAtStart = 70;
-        fireEnergy = fireEnergyAtStart;
-        fireCost = 10;
+        health = maxHealth = 50;
+        scratchDamage = 10;
+        fireDamage = 5;
+        fireEnergy = maxFireEnergy = 5;
+        fireCost = 1;
+        fireEnergyDelay = 10;
         playedDeathTone = false;
         playedFlinchTone = false;
         initWorldKeyListener();
@@ -81,6 +83,7 @@ public class Player extends Entity{
             jump();
             updateImage();
             updateFireballs();
+            world.hud.updateHUD(health, maxHealth, fireEnergy, maxFireEnergy);
             checkDeath();
         }
         else{
@@ -165,13 +168,16 @@ public class Player extends Entity{
     
     /**
      * Fireball attack; shoots new fireball.
+     * Resets fireEnergyDelayCounter so that the player has
+     * to wait longer before firing again.
      */
     public void fire(){
-        if (!justFired && fireEnergy > fireCost){
+        if (!justFired && fireEnergy >= fireCost){
             attacking = true;
             firing = true;
             justFired = true;
             fireEnergy -= fireCost;
+            fireEnergyDelayCounter = 0;
             currentAction = FIRING;
             animationCycler = 0;
             timeToUpdateCycler = UPDATE_TIME - 1;
@@ -287,6 +293,8 @@ public class Player extends Entity{
      * Player includes actions other than moving and flinching,
      * so Entity.updateImage() is overridden here to include firing,
      * scratching, and gliding.
+     * 
+     * This also updates the dragon's fireEnergy.
      */
     @Override
     public void updateImage(){
@@ -325,6 +333,7 @@ public class Player extends Entity{
                         justFired = false;
                     }
                 }
+                
                 //Since the scratch image width is twice that of the normal sprite
                 if (attacking && scratching){
                     //To compensate for the extra width, the character is moved
@@ -334,9 +343,16 @@ public class Player extends Entity{
                     }
                     setFitWidth(origWidth*2);
                 }
-                if (fireEnergy < fireEnergyAtStart){
-                    fireEnergy++;
+                
+                //Increase the fireEnergy
+                if (fireEnergy < maxFireEnergy){
+                    fireEnergyDelayCounter++;
+                    if (fireEnergyDelayCounter == fireEnergyDelay) {
+                        fireEnergy++;
+                        fireEnergyDelayCounter = 0;
+                    }
                 }
+                
                 setImage(playerSprites.get(currentAction)[animationCycler]);
                 animationCycler++;
             }

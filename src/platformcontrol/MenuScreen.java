@@ -8,8 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -168,9 +166,10 @@ public class MenuScreen extends GameState {
 
         Scene scene = new Scene(root, w * 0.75, h * 0.75);
         Stage stage = new Stage();
-        stage.getIcons().add(new Image("/characterimages/DragonIcon.png"));
+        stage.getIcons().add(new Image("/levelresources/DragonIcon.png"));
         stage.setScene(scene);
         stage.setResizable(false);
+        stage.setTitle("Help and Controls");
         stage.show();
         stage.setOnCloseRequest(null);
     }
@@ -189,12 +188,12 @@ public class MenuScreen extends GameState {
                     File.createTempFile("credits", ".txt", Paths.get(".").toFile());
             tempFile.deleteOnExit(); //Delete file after program termination
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
-                String line;
-                do {
-                    line = reader.readLine();
+                String line = reader.readLine();
+                while (line != null) {
                     String lineToWrite = String.format(line + "%n");
                     writer.write(lineToWrite);
-                } while (line != null);
+                    line = reader.readLine();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

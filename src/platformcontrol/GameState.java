@@ -26,6 +26,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
+import levels.HUD;
 import platformcontrol.GameStateManager.StateType;
 
 abstract public class GameState extends Pane{
@@ -57,6 +58,7 @@ abstract public class GameState extends Pane{
     
     //Characters
     public Player player;
+    public HUD hud;
     public Group entities = new Group();
     public Group enemies = new Group();
     
@@ -359,9 +361,11 @@ abstract public class GameState extends Pane{
         }
         blankTile = tileSet[0][0];
         
+        hud = new HUD(this);
+        
         //Add enemies and player last
         entities.getChildren().addAll(enemies, player);
-        this.getChildren().addAll(map, entities);
+        this.getChildren().addAll(map, hud, entities);
     }//End loadMap()
     
     /**

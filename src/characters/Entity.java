@@ -14,6 +14,7 @@ abstract public class Entity extends ImageView {
 
     //Character Properties
     protected int health;
+    protected int maxHealth;
     protected int moveSpeed;
     protected int jumpSpeed;
     protected int jumpHeight;
