@@ -19,7 +19,7 @@ public final class GameStateManager{
     public double width;
     public double height;
     
-    public enum StateType {MENU, LOAD, LEVEL1, LEVEL2, DONE;}
+    public enum StateType {MENU, LOAD, LEVEL1, LEVEL2, FINISHED;}
     
     public GameStateManager(Stage stage){
         this.stage = stage;
@@ -54,6 +54,9 @@ public final class GameStateManager{
             case LEVEL2:
                 currentLevel = new Level2(this);
                 break;
+            case FINISHED:
+                currentLevel = new FinishedGameScreen(this);
+                break;
             default:
                 //Do nothing
         }
@@ -73,10 +76,13 @@ public final class GameStateManager{
     public void changeState(){
         StateType[] states = StateType.values();
         int i = 0;
+        //Find the current state
         while (states[i] != currentState){
             i++;
         }
-        changeState(states[i+1]);
+        //Change it to the next state in the states array
+        i++;
+        changeState(states[i]);
     }
     
     /**
@@ -88,7 +94,7 @@ public final class GameStateManager{
         //If the file exists, compare if current level is higher than
         //the saved level. If it is, overwrite it.
         if (file.exists() && currentState != StateType.MENU && 
-                currentState != StateType.LOAD && currentState != StateType.DONE){
+                currentState != StateType.LOAD && currentState != StateType.FINISHED){
             int oldLevel = loadSave();
             String len = "LEVEL";
             String currentLevelString = currentState.toString();

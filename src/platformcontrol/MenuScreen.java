@@ -1,10 +1,16 @@
 package platformcontrol;
 
 import java.awt.Desktop;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -138,6 +144,10 @@ public class MenuScreen extends GameState {
         }
     }
     
+    /**
+     * Opens the help screen, showing controls and allowing
+     * the user to view the credits.
+     */
     private void openHelpDialog() {
         BorderPane root = new BorderPane();
         root.setBackground(background);
@@ -165,11 +175,31 @@ public class MenuScreen extends GameState {
         stage.setOnCloseRequest(null);
     }
     
+    /**
+     * Makes a temporary .txt file that contains the credits and
+     * license information. File is deleted upon program termination.
+     */
     private void showCredits() {
         try {
-            URL credits = this.getClass().getResource("/Credits for DragonGame.txt");
-            Desktop.getDesktop().open(new File(credits.toURI()));
-        } catch (IOException | URISyntaxException ex) {
+            InputStream credits = 
+                    this.getClass().getResourceAsStream("/Credits for DragonGame.txt");
+            BufferedReader reader = 
+                    new BufferedReader(new InputStreamReader(credits));
+            File tempFile = 
+                    File.createTempFile("credits", ".txt", Paths.get(".").toFile());
+            tempFile.deleteOnExit(); //Delete file after program termination
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+                String line;
+                do {
+                    line = reader.readLine();
+                    String lineToWrite = String.format(line + "%n");
+                    writer.write(lineToWrite);
+                } while (line != null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Desktop.getDesktop().open(tempFile);
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
     }

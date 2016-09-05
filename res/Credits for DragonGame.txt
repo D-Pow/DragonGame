@@ -1,10 +1,11 @@
 Credits for DragonGame
 
-ForeignGuyMike for his contribution of all art (sprite sheets, backgrounds), 
-tile map, happy background music, jump and scratch sounds, and for his guidance 
-in designing some of the outline of the game.
+Credits go to ForeignGuyMike for his contribution of all art (sprite sheets, 
+backgrounds, tile map), happy background music, jump and scratch sounds, and for 
+his guidance in designing some of the outline of the game.
 
-OpenGameArt.org for hosting all of the following contributors and their sounds:
+Credits go to OpenGameArt.org for hosting all of the following contributors and their 
+sounds:
 Bart K. for the fireball sound, 
 bart for the growl sound, 
 Gobusto for the death sound, 
