@@ -355,6 +355,11 @@ public class Player extends Entity{
         }
     }
     
+    @Override
+    public void playDeathTone() {
+        SoundEffect.GROWL.play();
+    }
+    
     /**
      * Add all the controls for the game, including movement, attacks,
      * and pausing the game.

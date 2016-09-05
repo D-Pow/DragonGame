@@ -101,9 +101,10 @@ public class Fireball extends Entity {
     @Override
     public void updateImage() {
         //0 = Fireball is still active
-        //1 = Fireball must dissipated
+        //1 = Fireball must dissipate
         timeToUpdateCycler++;
-        if (timeToUpdateCycler == UPDATE_TIME / 2) {//Make it update the sprite faster
+        //Fireball sprite should update faster than character sprites
+        if (timeToUpdateCycler == UPDATE_TIME / 2) {
             int fireballState = 0;
             if (hitObject) {
                 fireballState = 1;
@@ -114,11 +115,17 @@ public class Fireball extends Entity {
                 if (fireballState == 1) {
                     //Label fireball for destruction
                     dissipated = true;
+                    //playDeathTone(); I think it's better without the dissipate sound
                 }
                 animationCycler = 0;
             }
             timeToUpdateCycler = 0;
         }
+    }
+    
+    @Override
+    public void playDeathTone() {
+        SoundEffect.DISSIPATE.play();
     }
 
 }

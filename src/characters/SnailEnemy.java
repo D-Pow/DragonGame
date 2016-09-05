@@ -34,5 +34,10 @@ public class SnailEnemy extends Entity{
         flinchImage = sprites.get(currentAction)[0];
         this.setImage(sprites.get(currentAction)[0]);
     }
+
+    @Override
+    public void playDeathTone() {
+        SoundEffect.DEATH.play();
+    }
     
 }

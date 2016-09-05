@@ -18,7 +18,9 @@ public enum SoundEffect {
     FIREBALL("fireball.aiff"),
     SCRATCH("scratch.aiff"),
     GROWL("growl.aiff"),
-    SILENCE("silence.aiff");
+    DEATH("death.aiff"),
+    SILENCE("silence.aiff"),
+    DISSIPATE("dissipate.aiff");
     
     private Clip clip;
     

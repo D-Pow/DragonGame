@@ -60,6 +60,8 @@ abstract public class Entity extends ImageView {
     protected int timeToUpdateCycler;
     //when deathCounter == DEATH_TIME, the level resets
     protected int deathCounter;
+    //Only lets the death tone play once when the entity dies
+    protected boolean playedDeathTone;
 
     Image[] deathSprites;
     ArrayList<Image[]> sprites;
@@ -85,6 +87,7 @@ abstract public class Entity extends ImageView {
         currentAction = WALKING; //Default for enemies
         jumpSpeed = 3;
         jumpHeight = 40; //Pixel jump height = jumpHeight*jumpSpeed
+        playedDeathTone = false;
         animationCycler = timeToUpdateCycler = 0;
     }
 
@@ -220,6 +223,13 @@ abstract public class Entity extends ImageView {
      * entity from the world (GameState).
      */
     public void die() {
+        //If the entity just died, then play sound once at the beginning
+        //of the image cycle
+        if (!playedDeathTone) {
+            playDeathTone();
+            playedDeathTone = true;
+        }
+        
         //Change the sprite to represent death
         timeToUpdateCycler++;
         if (timeToUpdateCycler == UPDATE_TIME) {
@@ -231,7 +241,8 @@ abstract public class Entity extends ImageView {
             }
             deathCounter++;
         }
-        //Remove the entity from the world
+        
+        //Remove the entity from the world after the animation plays
         if (deathCounter == DEATH_TIME) {
             try {
                 //If Player, remove from entities Group
@@ -251,6 +262,11 @@ abstract public class Entity extends ImageView {
             }
         }
     }
+    
+    /**
+     * Specifies which death tone should be played for each character.
+     */
+    public abstract void playDeathTone();
 
     /**
      * Updates the current sprite of the entity based on the
