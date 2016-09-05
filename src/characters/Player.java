@@ -57,6 +57,8 @@ public class Player extends Entity{
         fireEnergyAtStart = 70;
         fireEnergy = fireEnergyAtStart;
         fireCost = 10;
+        playedDeathTone = false;
+        playedFlinchTone = false;
         initWorldKeyListener();
         SoundEffect.SILENCE.play(); //Play a blank sound to load all sounds into cache
     }
@@ -236,8 +238,8 @@ public class Player extends Entity{
      * If it is, then move the map rather than the player.
      */
     public void checkMapLocation(){
-        double centerAreaWidth = world.getWidth()/6;
-        double centerAreaX = (world.getWidth() - centerAreaWidth)/2;
+        double centerAreaWidth = this.getFitWidth()/4;
+        double centerAreaX = world.getWidth()/2 - centerAreaWidth;
         
         if (direction.equals("Left") && !hitLeft &&   //Check if player should move
                 world.mapX < 0){                      //Check if map is in bounds
@@ -339,6 +341,10 @@ public class Player extends Entity{
                 animationCycler++;
             }
             else if (flinching){
+                if (!playedFlinchTone) {
+                    playFlinchTone();
+                    playedFlinchTone = true;
+                }
                 if (flinchCycler == 1 || flinchCycler == 3){
                     setImage(flinchImage);
                 }
@@ -349,6 +355,7 @@ public class Player extends Entity{
                 if (flinchCycler == 4){
                     flinchCycler = 0;
                     flinching = false;
+                    playedFlinchTone = false;
                 }
             }
             timeToUpdateCycler = 0;
@@ -358,6 +365,12 @@ public class Player extends Entity{
     @Override
     public void playDeathTone() {
         SoundEffect.GROWL.play();
+    }
+    
+    
+    @Override
+    public void playFlinchTone() {
+        SoundEffect.DRAGON_GRUNT.play();
     }
     
     /**

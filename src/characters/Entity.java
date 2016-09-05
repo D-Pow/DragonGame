@@ -62,6 +62,8 @@ abstract public class Entity extends ImageView {
     protected int deathCounter;
     //Only lets the death tone play once when the entity dies
     protected boolean playedDeathTone;
+    //Only lets the flinch tone play once when the entity flinches
+    protected boolean playedFlinchTone;
 
     Image[] deathSprites;
     ArrayList<Image[]> sprites;
@@ -88,6 +90,7 @@ abstract public class Entity extends ImageView {
         jumpSpeed = 3;
         jumpHeight = 40; //Pixel jump height = jumpHeight*jumpSpeed
         playedDeathTone = false;
+        playedFlinchTone = false;
         animationCycler = timeToUpdateCycler = 0;
     }
 
@@ -267,6 +270,11 @@ abstract public class Entity extends ImageView {
      * Specifies which death tone should be played for each character.
      */
     public abstract void playDeathTone();
+    
+    /**
+     * Specifies which flinch tone should be played for each character.
+     */
+    public abstract void playFlinchTone();
 
     /**
      * Updates the current sprite of the entity based on the
@@ -283,6 +291,10 @@ abstract public class Entity extends ImageView {
                 }
             }
             else{
+                if (!playedFlinchTone) {
+                    playFlinchTone();
+                    playedFlinchTone = true;
+                }
                 if (flinchCycler == 0 || flinchCycler == 2){
                     setImage(flinchImage);
                 }
@@ -295,6 +307,7 @@ abstract public class Entity extends ImageView {
                     flinching = false;
                     moving = true;
                     justHurt = false;
+                    playedFlinchTone = false;
                 }
             }
             timeToUpdateCycler = 0;

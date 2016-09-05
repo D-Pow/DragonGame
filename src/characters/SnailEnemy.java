@@ -40,4 +40,9 @@ public class SnailEnemy extends Entity{
         SoundEffect.DEATH.play();
     }
     
+    @Override
+    public void playFlinchTone() {
+        SoundEffect.INSECT_GRUNT.play();
+    }
+    
 }

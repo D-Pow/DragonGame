@@ -127,5 +127,10 @@ public class Fireball extends Entity {
     public void playDeathTone() {
         SoundEffect.DISSIPATE.play();
     }
+    
+    @Override
+    public void playFlinchTone() {
+        //None
+    }
 
 }

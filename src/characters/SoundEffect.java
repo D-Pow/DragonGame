@@ -18,6 +18,8 @@ public enum SoundEffect {
     FIREBALL("fireball.aiff"),
     SCRATCH("scratch.aiff"),
     GROWL("growl.aiff"),
+    DRAGON_GRUNT("dragon_grunt.aiff"),
+    INSECT_GRUNT("insect_grunt.aiff"),
     DEATH("death.aiff"),
     SILENCE("silence.aiff"),
     DISSIPATE("dissipate.aiff");
