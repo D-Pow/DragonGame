@@ -330,12 +330,9 @@ abstract public class GameState extends Pane{
                 }
                 
                 //Convert the single integer into a row/column location
-                tileRow = 0;
-                tileCol = tile;
-                while (tileCol > numTileColumns - 1){
-                    tileCol -= numTileColumns;
-                    tileRow++;
-                }
+                tileRow = (int) tile / numTileColumns;
+                tileCol = tile % numTileColumns;
+                
                 //Get the correct tile image
                 Image selectedTile = tileSet[tileRow][tileCol];
                 //Put it in the map group with the right location
