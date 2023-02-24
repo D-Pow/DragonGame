@@ -9,9 +9,9 @@ import javafx.stage.Stage;
  * The arrow keys highlight the options, and enter
  * selects the highlighted option.
  *
- * @author DP
+ * @author D-Pow
  */
-public class Main extends Application{
+public class Main extends Application {
     int width = 800;
     int height = 600;
     GameStateManager gsm;
