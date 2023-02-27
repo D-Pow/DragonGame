@@ -1,0 +1,87 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'idea'
+}
+
+
+/* Code was originally written for Java v8 so ensure it can run with these configs */
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+    mavenCentral()
+}
+
+
+ext {
+    jarPath = "build/libs/DragonGame.jar";
+    distPath = "dist/";
+}
+
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+
+        resources {
+            srcDir 'res'
+        }
+    }
+}
+
+
+// Declare main class here for automatic usage everywhere else
+application {
+    mainClass = "platformcontrol.Main";
+}
+
+
+/**
+ * `build` task will also run `check` which runs `test`.
+ * It also generates a .jar file with the version appended to the filename.
+ * `jar` depends on `build`.
+ *
+ * @see <a href="https://docs.gradle.org/current/userguide/java_plugin.html#sec:java_tasks">Gradle Application plugin docs</a>
+ */
+jar {
+    // Include sources from built-in Jar task
+    from sourceSets.main.output
+
+    manifest {
+        attributes(
+            'Main-Class': application.mainClass,
+            'Implementation-Title': 'DragonGame',
+            'Implementation-Version': "${version}"
+        )
+    }
+
+    // Copy dependencies into jar
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it);
+        }
+    }
+
+    // Exclude signature files
+    exclude('META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA');
+
+    doLast {
+        copyJarToDist();
+    }
+}
+
+
+def copyJarToDist() {
+    copy {
+        from jarPath
+        into distPath
+    }
+}
+
+
+wrapper {
+    distributionType = Wrapper.DistributionType.ALL
+}

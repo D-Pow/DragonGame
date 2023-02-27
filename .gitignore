@@ -1,10 +1,17 @@
+# Gradle files
+.gradle/
+
+# Build output files
 build/
-MEP_MapEngineForPlatformers.jar
-Tile Description.txt
-nbproject/
-manifest.mf
-dist/README.TXT
-build.xml
+
+# Project files generated from running the app
 DragonSave.data
-Dragons_EXE_Excelsior_Project-native/
-src/sources.txt
+
+# IDE files
+.idea/
+
+# Various files often used during development
+MEP_MapEngineForPlatformers.jar
+
+# OS files
+.DS_Store
